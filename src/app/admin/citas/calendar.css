@@ -1,0 +1,357 @@
+/* FullCalendar Base Styles - Custom Implementation */
+
+/* Calendar Container */
+.fc {
+    font-family: inherit;
+    font-size: 1em;
+}
+
+.fc *,
+.fc *:before,
+.fc *:after {
+    box-sizing: border-box;
+}
+
+/* Toolbar */
+.fc .fc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5em;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
+}
+
+.fc .fc-toolbar-chunk {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Buttons */
+.fc .fc-button {
+    background-color: #0EA5E9;
+    border: 1px solid #0EA5E9;
+    color: white;
+    text-transform: capitalize;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.fc .fc-button:hover {
+    background-color: #0284C7;
+    border-color: #0284C7;
+}
+
+.fc .fc-button:disabled {
+    background-color: #E5E7EB;
+    border-color: #E5E7EB;
+    color: #9CA3AF;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #0369A1;
+    border-color: #0369A1;
+}
+
+.fc .fc-button-group {
+    display: inline-flex;
+    gap: 0;
+}
+
+.fc .fc-button-group>.fc-button {
+    border-radius: 0;
+    margin-left: -1px;
+}
+
+.fc .fc-button-group>.fc-button:first-child {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    margin-left: 0;
+}
+
+.fc .fc-button-group>.fc-button:last-child {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+/* View Container */
+.fc .fc-view-harness {
+    flex-grow: 1;
+    position: relative;
+}
+
+/* Scrollgrid */
+.fc .fc-scrollgrid {
+    border: 1px solid #E5E7EB;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.fc .fc-scrollgrid td,
+.fc .fc-scrollgrid th {
+    border-color: #E5E7EB;
+}
+
+/* Column Headers */
+.fc .fc-col-header-cell {
+    background-color: #F9FAFB;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0.75rem 0;
+    border: 1px solid #E5E7EB;
+}
+
+.fc .fc-col-header-cell-cushion {
+    display: block;
+    padding: 0.5rem;
+}
+
+/* Day Grid (Month View) */
+.fc .fc-daygrid-day {
+    position: relative;
+}
+
+.fc .fc-daygrid-day-frame {
+    min-height: 100px;
+    position: relative;
+}
+
+.fc .fc-daygrid-day-top {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.5rem;
+}
+
+.fc .fc-daygrid-day-number {
+    color: #374151;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    text-decoration: none;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+    background-color: #F0F9FF !important;
+}
+
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+    background-color: #0EA5E9;
+    color: white;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fc .fc-daygrid-day-events {
+    margin: 0 0.5rem;
+}
+
+.fc .fc-daygrid-event-harness {
+    margin-bottom: 2px;
+}
+
+/* Time Grid (Week/Day View) */
+.fc .fc-timegrid-slot {
+    height: 3rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.fc .fc-timegrid-slot-label {
+    color: #6B7280;
+    font-size: 0.875rem;
+    padding: 0 0.5rem;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.fc .fc-timegrid-axis {
+    border: 1px solid #E5E7EB;
+}
+
+.fc .fc-timegrid-now-indicator-line {
+    border-color: #EF4444;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.fc .fc-timegrid-now-indicator-arrow {
+    border-color: #EF4444;
+    border-style: solid;
+}
+
+/* Events */
+.fc-event {
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-width: 2px;
+    border-style: solid;
+    margin: 1px;
+    position: relative;
+}
+
+.fc-event:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    z-index: 10;
+}
+
+.fc-event-title {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fc-event-time {
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
+}
+
+.fc .fc-daygrid-event {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.fc .fc-daygrid-block-event .fc-event-time,
+.fc .fc-daygrid-block-event .fc-event-title {
+    padding: 1px;
+}
+
+/* List View */
+.fc .fc-list {
+    border: 1px solid #E5E7EB;
+}
+
+.fc .fc-list-event:hover td {
+    background-color: #F9FAFB;
+}
+
+.fc .fc-list-event-time,
+.fc .fc-list-event-title {
+    color: #374151;
+    padding: 0.5rem;
+}
+
+.fc .fc-list-day-cushion {
+    background-color: #F3F4F6;
+    font-weight: 600;
+    color: #1F2937;
+    padding: 0.5rem;
+}
+
+.fc .fc-list-table td {
+    border: 1px solid #E5E7EB;
+}
+
+/* More Link */
+.fc .fc-more-link {
+    color: #0EA5E9;
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 0.25rem;
+}
+
+.fc .fc-more-link:hover {
+    text-decoration: underline;
+}
+
+/* Popover */
+.fc .fc-popover {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.fc .fc-popover-header {
+    background-color: #F9FAFB;
+    padding: 0.5rem;
+    border-bottom: 1px solid #E5E7EB;
+    font-weight: 600;
+}
+
+.fc .fc-popover-body {
+    padding: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .fc .fc-toolbar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .fc .fc-toolbar-chunk {
+        display: flex;
+        justify-content: center;
+    }
+
+    .fc .fc-button {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.25rem;
+    }
+
+    .fc .fc-daygrid-day-frame {
+        min-height: 60px;
+    }
+}
+
+/* Additional utility classes */
+.fc .fc-h-event {
+    display: block;
+    border: 1px solid;
+    background-color: inherit;
+}
+
+.fc .fc-v-event {
+    display: block;
+    border: 1px solid;
+    background-color: inherit;
+}
+
+.fc-direction-ltr .fc-daygrid-event.fc-event-end,
+.fc-direction-rtl .fc-daygrid-event.fc-event-start {
+    margin-right: 2px;
+}
+
+.fc-direction-ltr .fc-daygrid-event.fc-event-start,
+.fc-direction-rtl .fc-daygrid-event.fc-event-end {
+    margin-left: 2px;
+}
+
+/* Ensure proper spacing */
+.fc table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.fc td,
+.fc th {
+    padding: 0;
+    vertical-align: top;
+}
