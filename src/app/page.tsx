@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Slider from '@/components/Slider';
 import NavigationDots from '@/components/NavigationDots';
-import DynamicSlide from '@/components/DynamicSlide';
+import SlideByLayout from '@/components/SlideByLayout';
+import OrganicBlobs from '@/components/OrganicBlobs';
 import Footer from '@/components/Footer';
 import { useSlides, useProducts } from '@/hooks/useContent';
 
@@ -35,17 +36,14 @@ export default function Home() {
   };
 
   return (
-    <div className="relative w-screen h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 overflow-hidden">
-      {/* Animated gradient orbs for depth */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-sky-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
+    <div className="relative w-screen h-screen bg-gradient-to-br from-white via-sky-50 to-blue-50 overflow-hidden">
+      {/* Organic Blobs - Dynamic Flow Design */}
+      <OrganicBlobs />
 
       {/* Mostrar loading hasta que esté montado en el cliente */}
       {!isMounted || slidesLoading ? (
         <div className="flex items-center justify-center h-full">
-          <div className="text-white text-2xl">Cargando slides...</div>
+          <div className="text-slate-900 text-2xl font-semibold">Cargando...</div>
         </div>
       ) : (
         <>
@@ -65,23 +63,22 @@ export default function Home() {
                   console.log(`🎨 [page.tsx] Renderizando slide ${index}:`, {
                     id: slide._id,
                     title: slide.title,
+                    layout: slide.layout,
                     order: slide.order,
                     isActive: currentSlide === index,
                     currentSlideIndex: index
                   });
                   return (
-                    <DynamicSlide
+                    <SlideByLayout
                       key={slide._id}
                       slide={slide}
                       isActive={currentSlide === index}
-                      currentSlideIndex={index}
-                      products={products}
                     />
                   );
                 })
             ) : (
               <div className="flex items-center justify-center h-full">
-                <div className="text-white text-2xl">No hay slides disponibles</div>
+                <div className="text-slate-900 text-2xl">No hay slides disponibles</div>
               </div>
             )}
           </Slider>

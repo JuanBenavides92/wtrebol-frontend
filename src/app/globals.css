@@ -52,12 +52,25 @@
 
     --radius: 0.5rem;
 
-    /* WTREBOL Modern Brand Colors */
-    --brand-dark: 222 47% 11%;
-    --brand-primary: 199 89% 48%;
-    --brand-secondary: 217 91% 60%;
-    --brand-accent: 142 76% 36%;
-    --brand-light: 210 40% 98%;
+    /* WTREBOL HVAC Brand Colors - Dynamic Flow Theme */
+    --hvac-frost: 199 89% 48%;
+    /* Sky Blue #0EA5E9 - Cold air */
+    --hvac-ice: 199 95% 74%;
+    /* Light Blue #60C5F1 - Fresh */
+    --hvac-heat: 43 96% 56%;
+    /* Amber #FBBF24 - Warmth/Energy */
+    --hvac-energy: 38 92% 50%;
+    /* Orange #F59E0B - Action */
+    --hvac-slate: 215 16% 47%;
+    /* Slate #64748B - Tech/Professional */
+    --hvac-dark: 222 47% 11%;
+    /* Slate 950 #0F172A - Deep contrast */
+    --hvac-light: 210 40% 98%;
+    /* Almost white #F8FAFC - Clean */
+    --hvac-bg-light: 204 100% 97%;
+    /* Sky 50 #F0F9FF - Light sections */
+    --hvac-bg-blue: 199 89% 95%;
+    /* Sky 100 #E0F2FE - Blue sections */
   }
 
   .dark {
@@ -193,5 +206,120 @@
 
   .bg-gradient-overlay {
     background: linear-gradient(to bottom, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.9));
+  }
+
+  /* Slide Animations */
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-left {
+    animation: fadeInLeft 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in-right {
+    animation: fadeInRight 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  /* Blob Animations - Organic floating movement */
+  @keyframes blob {
+
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    25% {
+      transform: translate(20px, -20px) scale(1.05);
+    }
+
+    50% {
+      transform: translate(-15px, 15px) scale(0.95);
+    }
+
+    75% {
+      transform: translate(15px, 10px) scale(1.02);
+    }
+  }
+
+  @keyframes blobSlow {
+
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+      transform: translate(-10px, 15px) scale(1.03);
+    }
+
+    66% {
+      transform: translate(10px, -10px) scale(0.97);
+    }
+  }
+
+  @keyframes flowLine {
+    0% {
+      stroke-dashoffset: 1000;
+      opacity: 0.1;
+    }
+
+    50% {
+      opacity: 0.3;
+    }
+
+    100% {
+      stroke-dashoffset: 0;
+      opacity: 0.1;
+    }
+  }
+
+  .animate-blob {
+    animation: blob 8s ease-in-out infinite;
+  }
+
+  .animate-blob-slow {
+    animation: blobSlow 12s ease-in-out infinite;
+  }
+
+  .animate-flow-line {
+    stroke-dasharray: 1000;
+    animation: flowLine 10s linear infinite;
   }
 }

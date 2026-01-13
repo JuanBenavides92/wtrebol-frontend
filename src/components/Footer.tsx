@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Facebook, Instagram, Linkedin, MessageCircle } from 'lucide-react';
 
 interface FooterProps {
     showFooter: boolean;
@@ -20,10 +21,30 @@ export default function Footer({ showFooter, isStatic = false }: FooterProps) {
     ];
 
     const socialLinks = [
-        { name: 'Facebook', icon: '📘', url: 'https://facebook.com' },
-        { name: 'Instagram', icon: '📷', url: 'https://instagram.com' },
-        { name: 'LinkedIn', icon: '💼', url: 'https://linkedin.com' },
-        { name: 'WhatsApp', icon: '💬', url: 'https://wa.me/1234567890' },
+        {
+            name: 'Facebook',
+            icon: Facebook,
+            url: 'https://www.facebook.com/profile.php?id=100063558730892',
+            color: 'hover:bg-blue-600/20 hover:border-blue-500/50'
+        },
+        {
+            name: 'Instagram',
+            icon: Instagram,
+            url: 'https://www.instagram.com/wtrebol_innovacion/',
+            color: 'hover:bg-pink-600/20 hover:border-pink-500/50'
+        },
+        {
+            name: 'LinkedIn',
+            icon: Linkedin,
+            url: 'https://www.linkedin.com/company/wtrebol/',
+            color: 'hover:bg-blue-700/20 hover:border-blue-600/50'
+        },
+        {
+            name: 'WhatsApp',
+            icon: MessageCircle,
+            url: 'https://wa.me/573028194432',
+            color: 'hover:bg-green-600/20 hover:border-green-500/50'
+        },
     ];
 
     return (
@@ -120,23 +141,26 @@ export default function Footer({ showFooter, isStatic = false }: FooterProps) {
                     <div className="space-y-6">
                         <h4 className="text-lg font-semibold text-white">Síguenos</h4>
                         <div className="flex flex-wrap gap-4">
-                            {socialLinks.map((social) => (
-                                <a
-                                    key={social.name}
-                                    href={social.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group relative"
-                                    aria-label={social.name}
-                                >
-                                    <div className="w-12 h-12 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-sky-400/50 transition-all duration-300 group-hover:scale-110">
-                                        <span className="text-2xl">{social.icon}</span>
-                                    </div>
-                                    <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                        {social.name}
-                                    </span>
-                                </a>
-                            ))}
+                            {socialLinks.map((social) => {
+                                const IconComponent = social.icon;
+                                return (
+                                    <a
+                                        key={social.name}
+                                        href={social.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group relative"
+                                        aria-label={social.name}
+                                    >
+                                        <div className={`w-12 h-12 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center hover:bg-white/10 ${social.color} transition-all duration-300 group-hover:scale-110`}>
+                                            <IconComponent className="w-5 h-5 text-white" />
+                                        </div>
+                                        <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                            {social.name}
+                                        </span>
+                                    </a>
+                                );
+                            })}
                         </div>
                         <div className="pt-6">
                             <p className="text-sm text-gray-400 mb-3">Horario de atención</p>

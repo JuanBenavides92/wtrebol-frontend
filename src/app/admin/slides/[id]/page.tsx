@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ArrowLeft, Save, Loader2, Eye } from 'lucide-react';
 import ImageUpload from '@/components/admin/ImageUpload';
+import LayoutSelector, { LayoutType } from '@/components/admin/LayoutSelector';
+import TextStyleControls from '@/components/admin/TextStyleControls';
 
 interface SlideFormData {
     title: string;
@@ -12,6 +14,18 @@ interface SlideFormData {
     imageUrl: string;
     buttonText: string;
     buttonLink: string;
+    layout: LayoutType;
+    overlayOpacity: number;
+    titleSize: number;
+    titleColor: string;
+    titleGradient: boolean;
+    titleBold: boolean;
+    titleItalic: boolean;
+    descriptionSize: number;
+    descriptionColor: string;
+    descriptionGradient: boolean;
+    descriptionBold: boolean;
+    descriptionItalic: boolean;
     order: number;
     isActive: boolean;
 }
@@ -29,6 +43,18 @@ export default function SlideFormPage() {
         imageUrl: '',
         buttonText: '',
         buttonLink: '',
+        layout: 'image-right',
+        overlayOpacity: 50,
+        titleSize: 48,
+        titleColor: 'auto',
+        titleGradient: false,
+        titleBold: true,
+        titleItalic: false,
+        descriptionSize: 18,
+        descriptionColor: 'auto',
+        descriptionGradient: false,
+        descriptionBold: false,
+        descriptionItalic: false,
         order: 1,
         isActive: true,
     });
@@ -66,6 +92,18 @@ export default function SlideFormPage() {
                     imageUrl: data.imageUrl || '',
                     buttonText: data.buttonText || '',
                     buttonLink: data.buttonLink || '',
+                    layout: data.layout || 'image-right',
+                    overlayOpacity: data.overlayOpacity ?? 50,
+                    titleSize: data.titleSize || 48,
+                    titleColor: data.titleColor || 'auto',
+                    titleGradient: data.titleGradient ?? false,
+                    titleBold: data.titleBold ?? true,
+                    titleItalic: data.titleItalic ?? false,
+                    descriptionSize: data.descriptionSize || 18,
+                    descriptionColor: data.descriptionColor || 'auto',
+                    descriptionGradient: data.descriptionGradient ?? false,
+                    descriptionBold: data.descriptionBold ?? false,
+                    descriptionItalic: data.descriptionItalic ?? false,
                     order: data.order || 1,
                     isActive: data.isActive ?? true,
                 });
@@ -195,6 +233,43 @@ export default function SlideFormPage() {
                     />
                 </div>
 
+                {/* Estilos de Texto */}
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Título Styling */}
+                    <TextStyleControls
+                        label="Estilo del Título"
+                        size={formData.titleSize}
+                        color={formData.titleColor}
+                        gradient={formData.titleGradient}
+                        bold={formData.titleBold}
+                        italic={formData.titleItalic}
+                        onSizeChange={(size) => setFormData(prev => ({ ...prev, titleSize: size }))}
+                        onColorChange={(color) => setFormData(prev => ({ ...prev, titleColor: color }))}
+                        onGradientChange={(gradient) => setFormData(prev => ({ ...prev, titleGradient: gradient }))}
+                        onBoldChange={(bold) => setFormData(prev => ({ ...prev, titleBold: bold }))}
+                        onItalicChange={(italic) => setFormData(prev => ({ ...prev, titleItalic: italic }))}
+                        minSize={20}
+                        maxSize={200}
+                    />
+
+                    {/* Descripción Styling */}
+                    <TextStyleControls
+                        label="Estilo de la Descripción"
+                        size={formData.descriptionSize}
+                        color={formData.descriptionColor}
+                        gradient={formData.descriptionGradient}
+                        bold={formData.descriptionBold}
+                        italic={formData.descriptionItalic}
+                        onSizeChange={(size) => setFormData(prev => ({ ...prev, descriptionSize: size }))}
+                        onColorChange={(color) => setFormData(prev => ({ ...prev, descriptionColor: color }))}
+                        onGradientChange={(gradient) => setFormData(prev => ({ ...prev, descriptionGradient: gradient }))}
+                        onBoldChange={(bold) => setFormData(prev => ({ ...prev, descriptionBold: bold }))}
+                        onItalicChange={(italic) => setFormData(prev => ({ ...prev, descriptionItalic: italic }))}
+                        minSize={12}
+                        maxSize={100}
+                    />
+                </div>
+
                 {/* Imagen */}
                 <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -224,6 +299,57 @@ export default function SlideFormPage() {
                         />
                     )}
                 </div>
+
+                {/* Layout Selector */}
+                <LayoutSelector
+                    selected={formData.layout}
+                    onChange={(layout) => setFormData(prev => ({ ...prev, layout }))}
+                />
+
+                {/* Overlay Opacity - Solo para image-background */}
+                {formData.layout === 'image-background' && (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Opacidad del Overlay ({formData.overlayOpacity}%)
+                        </label>
+                        <div className="flex items-center gap-4">
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={formData.overlayOpacity}
+                                onChange={(e) => setFormData(prev => ({ ...prev, overlayOpacity: parseInt(e.target.value) }))}
+                                className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
+                            />
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, overlayOpacity: 30 }))}
+                                    className="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors"
+                                >
+                                    Claro
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, overlayOpacity: 50 }))}
+                                    className="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors"
+                                >
+                                    Medio
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, overlayOpacity: 70 }))}
+                                    className="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors"
+                                >
+                                    Oscuro
+                                </button>
+                            </div>
+                        </div>
+                        <p className="mt-2 text-xs text-gray-500">
+                            Ajusta la oscuridad del overlay para mejorar la legibilidad del texto sobre la imagen
+                        </p>
+                    </div>
+                )}
 
                 {/* Botón CTA */}
                 <div className="grid md:grid-cols-2 gap-4">

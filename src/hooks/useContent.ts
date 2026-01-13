@@ -13,6 +13,21 @@ export interface Content {
     price?: string;
     order?: number;
     isActive: boolean;
+    layout?: 'image-right' | 'image-left' | 'image-background';
+    buttonText?: string;
+    buttonLink?: string;
+    overlayOpacity?: number;
+    // Text styling
+    titleSize?: number;
+    titleColor?: string;
+    titleGradient?: boolean;
+    titleBold?: boolean;
+    titleItalic?: boolean;
+    descriptionSize?: number;
+    descriptionColor?: string;
+    descriptionGradient?: boolean;
+    descriptionBold?: boolean;
+    descriptionItalic?: boolean;
     data?: Record<string, any>;
     createdAt: string;
     updatedAt: string;
