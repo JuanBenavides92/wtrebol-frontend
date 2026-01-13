@@ -2,6 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import {
+    Filter,
+    Calendar,
+    Clock,
+    User,
+    Phone,
+    Edit,
+    Trash2,
+    Loader2,
+    TrendingUp,
+    CheckCircle,
+    AlertCircle,
+    XCircle
+} from 'lucide-react';
 
 interface Appointment {
     _id: string;
@@ -24,22 +39,43 @@ interface Appointment {
     createdAt: string;
 }
 
-const statusColors: Record<string, string> = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    confirmed: 'bg-blue-100 text-blue-800',
-    'in-progress': 'bg-purple-100 text-purple-800',
-    completed: 'bg-green-100 text-green-800',
-    cancelled: 'bg-red-100 text-red-800',
-    'no-show': 'bg-gray-100 text-gray-800'
-};
-
-const statusLabels: Record<string, string> = {
-    pending: 'Pendiente',
-    confirmed: 'Confirmada',
-    'in-progress': 'En Progreso',
-    completed: 'Completada',
-    cancelled: 'Cancelada',
-    'no-show': 'No Asistió'
+const statusConfig: Record<string, { label: string; color: string; gradient: string; icon: any }> = {
+    pending: {
+        label: 'Pendiente',
+        color: 'text-amber-400',
+        gradient: 'from-amber-500/20 to-orange-500/20',
+        icon: Clock
+    },
+    confirmed: {
+        label: 'Confirmada',
+        color: 'text-sky-400',
+        gradient: 'from-sky-500/20 to-blue-500/20',
+        icon: CheckCircle
+    },
+    'in-progress': {
+        label: 'En Progreso',
+        color: 'text-purple-400',
+        gradient: 'from-purple-500/20 to-pink-500/20',
+        icon: TrendingUp
+    },
+    completed: {
+        label: 'Completada',
+        color: 'text-emerald-400',
+        gradient: 'from-emerald-500/20 to-teal-500/20',
+        icon: CheckCircle
+    },
+    cancelled: {
+        label: 'Cancelada',
+        color: 'text-red-400',
+        gradient: 'from-red-500/20 to-pink-500/20',
+        icon: XCircle
+    },
+    'no-show': {
+        label: 'No Asistió',
+        color: 'text-slate-400',
+        gradient: 'from-slate-500/20 to-gray-500/20',
+        icon: AlertCircle
+    }
 };
 
 const typeLabels: Record<string, string> = {
@@ -123,19 +159,59 @@ export default function AppointmentsTable({ onRefresh }: AppointmentsTableProps)
         });
     };
 
+    const stats = [
+        {
+            label: 'Total Citas',
+            value: appointments.length,
+            gradient: 'from-sky-500 to-blue-600',
+            bgGradient: 'from-sky-500/10 to-blue-600/10',
+            borderColor: 'border-sky-500/20'
+        },
+        {
+            label: 'Pendientes',
+            value: appointments.filter(a => a.status === 'pending').length,
+            gradient: 'from-amber-500 to-orange-600',
+            bgGradient: 'from-amber-500/10 to-orange-600/10',
+            borderColor: 'border-amber-500/20'
+        },
+        {
+            label: 'Confirmadas',
+            value: appointments.filter(a => a.status === 'confirmed').length,
+            gradient: 'from-emerald-500 to-teal-600',
+            bgGradient: 'from-emerald-500/10 to-teal-600/10',
+            borderColor: 'border-emerald-500/20'
+        },
+        {
+            label: 'Completadas',
+            value: appointments.filter(a => a.status === 'completed').length,
+            gradient: 'from-purple-500 to-pink-600',
+            bgGradient: 'from-purple-500/10 to-pink-600/10',
+            borderColor: 'border-purple-500/20'
+        }
+    ];
+
     return (
-        <div>
+        <div className="space-y-6">
             {/* Filtros */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+            >
+                <div className="flex items-center gap-2 mb-4">
+                    <Filter className="w-5 h-5 text-sky-400" />
+                    <h3 className="text-lg font-semibold text-white">Filtros</h3>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-slate-300 mb-2">
                             Estado
                         </label>
                         <select
                             value={filter.status}
                             onChange={(e) => setFilter({ ...filter, status: e.target.value })}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                         >
                             <option value="">Todos</option>
                             <option value="pending">Pendiente</option>
@@ -147,13 +223,13 @@ export default function AppointmentsTable({ onRefresh }: AppointmentsTableProps)
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-slate-300 mb-2">
                             Tipo de Servicio
                         </label>
                         <select
                             value={filter.type}
                             onChange={(e) => setFilter({ ...filter, type: e.target.value })}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                         >
                             <option value="">Todos</option>
                             <option value="maintenance">Mantenimiento</option>
@@ -165,142 +241,181 @@ export default function AppointmentsTable({ onRefresh }: AppointmentsTableProps)
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-slate-300 mb-2">
                             Fecha
                         </label>
                         <input
                             type="date"
                             value={filter.date}
                             onChange={(e) => setFilter({ ...filter, date: e.target.value })}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                         />
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Estadísticas */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow-sm p-4">
-                    <p className="text-gray-500 text-sm">Total Citas</p>
-                    <p className="text-2xl font-bold text-gray-900">{appointments.length}</p>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm p-4">
-                    <p className="text-gray-500 text-sm">Pendientes</p>
-                    <p className="text-2xl font-bold text-yellow-600">
-                        {appointments.filter(a => a.status === 'pending').length}
-                    </p>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm p-4">
-                    <p className="text-gray-500 text-sm">Confirmadas</p>
-                    <p className="text-2xl font-bold text-blue-600">
-                        {appointments.filter(a => a.status === 'confirmed').length}
-                    </p>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm p-4">
-                    <p className="text-gray-500 text-sm">Completadas</p>
-                    <p className="text-2xl font-bold text-green-600">
-                        {appointments.filter(a => a.status === 'completed').length}
-                    </p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {stats.map((stat, index) => (
+                    <motion.div
+                        key={stat.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        className="group relative"
+                    >
+                        <div className={`
+                            h-full bg-gradient-to-br ${stat.bgGradient} backdrop-blur-sm
+                            border ${stat.borderColor} rounded-2xl p-6
+                            transition-all duration-300 shadow-lg hover:shadow-2xl
+                        `}>
+                            <p className="text-sm font-medium text-slate-400 mb-2">{stat.label}</p>
+                            <p className="text-3xl font-bold text-white">{stat.value}</p>
+                            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
             </div>
 
             {/* Lista de Citas */}
             {isLoading ? (
-                <div className="text-center py-12">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
-                    <p className="mt-4 text-gray-600">Cargando citas...</p>
+                <div className="flex items-center justify-center py-20">
+                    <Loader2 className="h-12 w-12 text-sky-500 animate-spin" />
                 </div>
             ) : appointments.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                    <p className="text-gray-500 text-lg">No hay citas registradas</p>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-12 text-center"
+                >
+                    <Calendar className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                    <p className="text-slate-400 text-lg mb-4">No hay citas registradas</p>
                     <button
                         onClick={() => router.push('/admin/citas/nueva')}
-                        className="mt-4 text-sky-500 hover:text-sky-600"
+                        className="text-sky-400 hover:text-sky-300 transition-colors"
                     >
                         Crear primera cita
                     </button>
-                </div>
+                </motion.div>
             ) : (
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Cliente
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Servicio
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Fecha y Hora
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Estado
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Técnico
-                                </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Acciones
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {appointments.map((appointment) => (
-                                <tr key={appointment._id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div>
-                                            <div className="text-sm font-medium text-gray-900">
-                                                {appointment.customer.name}
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                {appointment.customer.phone}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-900">
-                                            {typeLabels[appointment.type]}
-                                        </div>
-                                        <div className="text-sm text-gray-500">
-                                            {appointment.duration} min
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-900">
-                                            {formatDate(appointment.scheduledDate)}
-                                        </div>
-                                        <div className="text-sm text-gray-500">
-                                            {appointment.startTime} - {appointment.endTime}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[appointment.status]}`}>
-                                            {statusLabels[appointment.status]}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {appointment.technician?.name || 'Sin asignar'}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => router.push(`/admin/citas/${appointment._id}`)}
-                                            className="text-sky-600 hover:text-sky-900 mr-4"
-                                        >
-                                            Editar
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(appointment._id)}
-                                            className="text-red-600 hover:text-red-900"
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </td>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
+                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden"
+                >
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-white/10">
+                            <thead>
+                                <tr className="bg-white/5">
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                                        Cliente
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                                        Servicio
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                                        Fecha y Hora
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                                        Estado
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                                        Técnico
+                                    </th>
+                                    <th className="px-6 py-4 text-right text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                                        Acciones
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {appointments.map((appointment, index) => {
+                                    const statusInfo = statusConfig[appointment.status];
+                                    const StatusIcon = statusInfo.icon;
+
+                                    return (
+                                        <motion.tr
+                                            key={appointment._id}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                                            className="hover:bg-white/5 transition-colors group"
+                                        >
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center">
+                                                        <User className="w-5 h-5 text-white" />
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm font-medium text-white">
+                                                            {appointment.customer.name}
+                                                        </div>
+                                                        <div className="text-sm text-slate-400 flex items-center gap-1">
+                                                            <Phone className="w-3 h-3" />
+                                                            {appointment.customer.phone}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-white">
+                                                    {typeLabels[appointment.type]}
+                                                </div>
+                                                <div className="text-sm text-slate-400">
+                                                    {appointment.duration} min
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-white flex items-center gap-2">
+                                                    <Calendar className="w-4 h-4 text-sky-400" />
+                                                    {formatDate(appointment.scheduledDate)}
+                                                </div>
+                                                <div className="text-sm text-slate-400 flex items-center gap-2">
+                                                    <Clock className="w-4 h-4 text-emerald-400" />
+                                                    {appointment.startTime} - {appointment.endTime}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className={`
+                                                    inline-flex items-center gap-2 px-3 py-1.5 rounded-lg
+                                                    bg-gradient-to-r ${statusInfo.gradient}
+                                                    border border-white/10
+                                                `}>
+                                                    <StatusIcon className={`w-4 h-4 ${statusInfo.color}`} />
+                                                    <span className={`text-sm font-medium ${statusInfo.color}`}>
+                                                        {statusInfo.label}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
+                                                {appointment.technician?.name || 'Sin asignar'}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button
+                                                        onClick={() => router.push(`/admin/citas/${appointment._id}`)}
+                                                        className="p-2 rounded-lg bg-white/5 hover:bg-sky-500/20 border border-white/10 hover:border-sky-500/50 transition-all group/btn"
+                                                    >
+                                                        <Edit className="w-4 h-4 text-slate-400 group-hover/btn:text-sky-400 transition-colors" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(appointment._id)}
+                                                        className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 transition-all group/btn"
+                                                    >
+                                                        <Trash2 className="w-4 h-4 text-slate-400 group-hover/btn:text-red-400 transition-colors" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </motion.div>
             )}
         </div>
     );

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { ArrowLeft, User, Mail, Phone, Wrench, Save, X, Loader2 } from 'lucide-react';
 
 export default function TechnicianFormPage() {
     const router = useRouter();
@@ -21,13 +23,13 @@ export default function TechnicianFormPage() {
     const [error, setError] = useState('');
 
     const availableSpecialties = [
-        { value: 'maintenance', label: 'Mantenimiento' },
-        { value: 'installation', label: 'Instalación' },
-        { value: 'repair', label: 'Reparación' },
-        { value: 'quotation', label: 'Cotización' },
-        { value: 'emergency', label: 'Emergencia' },
-        { value: 'deep-clean', label: 'Limpieza Profunda' },
-        { value: 'gas-refill', label: 'Recarga de Gas' }
+        { value: 'maintenance', label: 'Mantenimiento', icon: '🔧' },
+        { value: 'installation', label: 'Instalación', icon: '🏗️' },
+        { value: 'repair', label: 'Reparación', icon: '🛠️' },
+        { value: 'quotation', label: 'Cotización', icon: '📋' },
+        { value: 'emergency', label: 'Emergencia', icon: '🚨' },
+        { value: 'deep-clean', label: 'Limpieza Profunda', icon: '✨' },
+        { value: 'gas-refill', label: 'Recarga de Gas', icon: '⚡' }
     ];
 
     useEffect(() => {
@@ -102,126 +104,175 @@ export default function TechnicianFormPage() {
     if (isLoading && isEditing) {
         return (
             <div className="p-6 text-center">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
-                <p className="mt-4">Cargando técnico...</p>
+                <Loader2 className="inline-block h-12 w-12 text-sky-500 animate-spin" />
+                <p className="mt-4 text-white">Cargando técnico...</p>
             </div>
         );
     }
 
     return (
-        <div className="p-6 max-w-2xl mx-auto">
-            <div className="mb-6">
+        <div className="p-8 max-w-3xl mx-auto">
+            {/* Header */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="mb-8"
+            >
                 <button
                     onClick={() => router.push('/admin/tecnicos')}
-                    className="text-sky-500 hover:text-sky-600 mb-4"
+                    className="flex items-center gap-2 text-sky-400 hover:text-sky-300 mb-4 transition-colors"
                 >
-                    ← Volver a técnicos
+                    <ArrowLeft className="w-4 h-4" />
+                    Volver a técnicos
                 </button>
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-4xl font-bold text-white">
                     {isEditing ? 'Editar Técnico' : 'Nuevo Técnico'}
                 </h1>
-            </div>
+            </motion.div>
 
+            {/* Error Message */}
             {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-xl mb-6"
+                >
                     {error}
-                </div>
+                </motion.div>
             )}
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-6">
+            {/* Form */}
+            <motion.form
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                onSubmit={handleSubmit}
+                className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl shadow-2xl p-8 space-y-6"
+            >
+                {/* Nombre */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre *
+                    <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
+                        <User className="w-4 h-4 text-sky-400" />
+                        Nombre <span className="text-red-400">*</span>
                     </label>
                     <input
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                        placeholder="Nombre completo del técnico"
                         required
                     />
                 </div>
 
+                {/* Email */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email *
+                    <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
+                        <Mail className="w-4 h-4 text-emerald-400" />
+                        Email <span className="text-red-400">*</span>
                     </label>
                     <input
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                        placeholder="correo@ejemplo.com"
                         required
                     />
                 </div>
 
+                {/* Teléfono */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Teléfono *
+                    <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
+                        <Phone className="w-4 h-4 text-purple-400" />
+                        Teléfono <span className="text-red-400">*</span>
                     </label>
                     <input
                         type="tel"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
+                        placeholder="+57 300 123 4567"
                         required
                     />
                 </div>
 
+                {/* Especialidades */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Especialidades *
+                    <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-3">
+                        <Wrench className="w-4 h-4 text-amber-400" />
+                        Especialidades <span className="text-red-400">*</span>
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                         {availableSpecialties.map((spec) => (
-                            <button
+                            <motion.button
                                 key={spec.value}
                                 type="button"
                                 onClick={() => toggleSpecialty(spec.value)}
-                                className={`px-4 py-2 rounded-lg border transition-colors ${formData.specialties.includes(spec.value)
-                                        ? 'bg-sky-500 text-white border-sky-500'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:border-sky-500'
-                                    }`}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className={`
+                                    px-4 py-3 rounded-xl border-2 transition-all font-medium text-sm
+                                    ${formData.specialties.includes(spec.value)
+                                        ? 'bg-sky-500/20 text-white border-sky-500'
+                                        : 'bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:bg-white/10'
+                                    }
+                                `}
                             >
+                                <span className="mr-2">{spec.icon}</span>
                                 {spec.label}
-                            </button>
+                            </motion.button>
                         ))}
                     </div>
                     {formData.specialties.length === 0 && (
-                        <p className="text-sm text-red-600 mt-2">Selecciona al menos una especialidad</p>
+                        <p className="text-sm text-red-400 mt-2">Selecciona al menos una especialidad</p>
                     )}
                 </div>
 
-                <div className="flex items-center">
+                {/* Técnico Activo */}
+                <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl">
                     <input
                         type="checkbox"
                         id="isActive"
                         checked={formData.isActive}
                         onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                        className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
+                        className="h-5 w-5 text-sky-600 focus:ring-sky-500 border-white/20 rounded bg-white/5"
                     />
-                    <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">
+                    <label htmlFor="isActive" className="text-sm font-medium text-white cursor-pointer">
                         Técnico activo
                     </label>
                 </div>
 
-                <div className="flex justify-end space-x-4 pt-6 border-t">
+                {/* Botones */}
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
                     <button
                         type="button"
                         onClick={() => router.push('/admin/tecnicos')}
-                        className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="px-6 py-3 border border-white/10 bg-white/5 text-slate-300 rounded-xl hover:bg-white/10 transition-all font-medium flex items-center gap-2"
                     >
+                        <X className="w-4 h-4" />
                         Cancelar
                     </button>
                     <button
                         type="submit"
                         disabled={isLoading || formData.specialties.length === 0}
-                        className="px-6 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                        className="px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:from-sky-600 hover:to-blue-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-sky-500/50 flex items-center gap-2"
                     >
-                        {isLoading ? 'Guardando...' : isEditing ? 'Actualizar Técnico' : 'Crear Técnico'}
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Guardando...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="w-4 h-4" />
+                                {isEditing ? 'Actualizar Técnico' : 'Crear Técnico'}
+                            </>
+                        )}
                     </button>
                 </div>
-            </form>
+            </motion.form>
         </div>
     );
 }

@@ -18,14 +18,14 @@ export default function AdminLayout({
     }
 
     return (
-        <div className="flex h-screen bg-slate-900">
+        <div className="flex h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800">
             {/* Sidebar */}
             <Sidebar />
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col ml-64">
+            <div className="flex-1 flex flex-col ml-72">
                 <AdminHeader />
-                <main className="flex-1 overflow-y-auto">
+                <main className="flex-1 overflow-y-auto bg-slate-900/30">
                     {children}
                 </main>
             </div>

@@ -2,8 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import SliderAuto from '@/components/SliderAuto';
-import ServiciosSection from '@/components/ServiciosSection';
+import ServiciosSection3D from '@/components/ServiciosSection3D';
+import PorQueElegirnosSection from '@/components/PorQueElegirnosSection';
+import ProcesoTrabajoSection from '@/components/ProcesoTrabajoSection';
 import ProductosSection from '@/components/ProductosSection';
+import MarcasPartnersSection from '@/components/MarcasPartnersSection';
+import FAQSection from '@/components/FAQSection';
+import EmergenciasSection from '@/components/EmergenciasSection';
 import CTASection from '@/components/CTASection';
 import Footer from '@/components/Footer';
 import { useSlides } from '@/hooks/useContent';
@@ -46,11 +51,26 @@ export default function Home() {
         )}
       </section>
 
-      {/* Servicios Section */}
-      <ServiciosSection />
+      {/* Servicios Section - 3D Scroll Effect */}
+      <ServiciosSection3D />
+
+      {/* Por Qué Elegirnos Section */}
+      <PorQueElegirnosSection />
+
+      {/* Proceso de Trabajo Section */}
+      <ProcesoTrabajoSection />
 
       {/* Productos Section */}
       <ProductosSection />
+
+      {/* Marcas Partners Section */}
+      <MarcasPartnersSection />
+
+      {/* FAQ Section */}
+      <FAQSection />
+
+      {/* Emergencias 24/7 Section */}
+      <EmergenciasSection />
 
       {/* CTA Section */}
       <CTASection />

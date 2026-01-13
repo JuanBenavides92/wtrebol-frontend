@@ -197,7 +197,7 @@ export default function AppointmentFormPage() {
         return (
             <div className="p-6 text-center">
                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
-                <p className="mt-4">Cargando cita...</p>
+                <p className="mt-4 text-white">Cargando cita...</p>
             </div>
         );
     }
@@ -207,31 +207,31 @@ export default function AppointmentFormPage() {
             <div className="mb-6">
                 <button
                     onClick={() => router.push('/admin/citas')}
-                    className="text-sky-500 hover:text-sky-600 mb-4"
+                    className="text-sky-400 hover:text-sky-300 mb-4 transition-colors"
                 >
                     ← Volver a citas
                 </button>
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-3xl font-bold text-white">
                     {isEditing ? 'Editar Cita' : 'Nueva Cita'}
                 </h1>
             </div>
 
             {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-xl mb-6">
                     {error}
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl shadow-2xl p-8 space-y-8">
                 {/* Tipo de Servicio */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                         Tipo de Servicio *
                     </label>
                     <select
                         value={formData.type}
                         onChange={(e) => handleTypeChange(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                         required
                     >
                         <option value="maintenance">Mantenimiento (90 min)</option>
@@ -247,13 +247,13 @@ export default function AppointmentFormPage() {
                 {/* Estado */}
                 {isEditing && (
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-slate-300 mb-2">
                             Estado
                         </label>
                         <select
                             value={formData.status}
                             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                         >
                             <option value="pending">Pendiente</option>
                             <option value="confirmed">Confirmada</option>
@@ -265,11 +265,11 @@ export default function AppointmentFormPage() {
                 )}
 
                 {/* Información del Cliente */}
-                <div className="border-t pt-6">
-                    <h2 className="text-lg font-semibold mb-4">Información del Cliente</h2>
+                <div className="border-t border-white/10 pt-6">
+                    <h2 className="text-xl font-bold text-white mb-4">Información del Cliente</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Nombre *
                             </label>
                             <input
@@ -279,13 +279,13 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     customer: { ...formData.customer, name: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Teléfono *
                             </label>
                             <input
@@ -295,13 +295,13 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     customer: { ...formData.customer, phone: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Email *
                             </label>
                             <input
@@ -311,13 +311,13 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     customer: { ...formData.customer, email: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Dirección *
                             </label>
                             <input
@@ -327,13 +327,13 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     customer: { ...formData.customer, address: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 required
                             />
                         </div>
 
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Notas
                             </label>
                             <textarea
@@ -342,7 +342,7 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     customer: { ...formData.customer, notes: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 rows={3}
                             />
                         </div>
@@ -350,30 +350,30 @@ export default function AppointmentFormPage() {
                 </div>
 
                 {/* Fecha y Hora */}
-                <div className="border-t pt-6">
-                    <h2 className="text-lg font-semibold mb-4">Fecha y Hora</h2>
+                <div className="border-t border-white/10 pt-6">
+                    <h2 className="text-xl font-bold text-white mb-4">Fecha y Hora</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Fecha *
                             </label>
                             <input
                                 type="date"
                                 value={formData.scheduledDate}
                                 onChange={(e) => setFormData({ ...formData, scheduledDate: e.target.value })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Técnico
                             </label>
                             <select
                                 value={formData.technician.id}
                                 onChange={(e) => handleTechnicianChange(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                             >
                                 <option value="">Sin asignar</option>
                                 {technicians.map(tech => (
@@ -388,7 +388,7 @@ export default function AppointmentFormPage() {
                     {/* Slots Disponibles */}
                     {availableSlots.length > 0 && (
                         <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Horarios Disponibles
                             </label>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -397,9 +397,9 @@ export default function AppointmentFormPage() {
                                         key={index}
                                         type="button"
                                         onClick={() => handleSlotSelect(slot)}
-                                        className={`px-4 py-2 rounded-lg border transition-colors ${formData.startTime === slot.start
-                                                ? 'bg-sky-500 text-white border-sky-500'
-                                                : 'bg-white text-gray-700 border-gray-300 hover:border-sky-500'
+                                        className={`px-4 py-2 rounded-xl border-2 transition-all font-medium ${formData.startTime === slot.start
+                                            ? 'bg-sky-500 text-white border-sky-500'
+                                            : 'bg-white/5 text-white border-white/10 hover:border-sky-500 hover:bg-white/10'
                                             }`}
                                     >
                                         {slot.start} - {slot.end}
@@ -411,11 +411,11 @@ export default function AppointmentFormPage() {
                 </div>
 
                 {/* Detalles del Servicio */}
-                <div className="border-t pt-6">
-                    <h2 className="text-lg font-semibold mb-4">Detalles del Servicio</h2>
+                <div className="border-t border-white/10 pt-6">
+                    <h2 className="text-xl font-bold text-white mb-4">Detalles del Servicio</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Tipo de Equipo
                             </label>
                             <input
@@ -425,13 +425,13 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     serviceDetails: { ...formData.serviceDetails, equipmentType: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 placeholder="Ej: Split, Central, Ventana"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Marca
                             </label>
                             <input
@@ -441,13 +441,13 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     serviceDetails: { ...formData.serviceDetails, brand: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 placeholder="Ej: LG, Samsung, Carrier"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Modelo
                             </label>
                             <input
@@ -457,13 +457,13 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     serviceDetails: { ...formData.serviceDetails, model: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 placeholder="Ej: Inverter 12000 BTU"
                             />
                         </div>
 
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
                                 Problema / Descripción
                             </label>
                             <textarea
@@ -472,7 +472,7 @@ export default function AppointmentFormPage() {
                                     ...formData,
                                     serviceDetails: { ...formData.serviceDetails, issue: e.target.value }
                                 })}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
                                 rows={3}
                                 placeholder="Describe el problema o requerimiento"
                             />
@@ -481,18 +481,18 @@ export default function AppointmentFormPage() {
                 </div>
 
                 {/* Botones */}
-                <div className="flex justify-end space-x-4 pt-6 border-t">
+                <div className="flex justify-end space-x-4 pt-6 border-t border-white/10">
                     <button
                         type="button"
                         onClick={() => router.push('/admin/citas')}
-                        className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="px-6 py-3 border border-white/10 bg-white/5 text-slate-300 rounded-xl hover:bg-white/10 transition-all font-medium"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="px-6 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                        className="px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:from-sky-600 hover:to-blue-700 transition-all font-medium disabled:opacity-50 shadow-lg shadow-sky-500/50"
                     >
                         {isLoading ? 'Guardando...' : isEditing ? 'Actualizar Cita' : 'Crear Cita'}
                     </button>

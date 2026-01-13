@@ -74,13 +74,13 @@ export default function SlideByLayout({ slide, isActive }: SlideByLayoutProps) {
         return (
             <div
                 className="w-screen flex items-center justify-center relative"
-                style={{ height: 'calc(100vh - 80px)' }}
+                style={{ height: '100vh', paddingTop: '80px' }}
                 data-slide
             >
                 <div className="container mx-auto px-6 lg:px-12">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         {/* Texto - Izquierda */}
-                        <div className={`space-y-6 ${isActive ? 'animate-fade-in-left' : 'opacity-0'}`}>
+                        <div className={`space-y-6 text-center lg:text-left ${isActive ? 'animate-fade-in-left' : 'opacity-0'}`}>
                             <h2
                                 className="leading-tight"
                                 style={getTitleStyle()}
@@ -128,7 +128,7 @@ export default function SlideByLayout({ slide, isActive }: SlideByLayoutProps) {
         return (
             <div
                 className="w-screen flex items-center justify-center relative"
-                style={{ height: 'calc(100vh - 80px)' }}
+                style={{ height: '100vh', paddingTop: '80px' }}
                 data-slide
             >
                 <div className="container mx-auto px-6 lg:px-12">
@@ -147,7 +147,7 @@ export default function SlideByLayout({ slide, isActive }: SlideByLayoutProps) {
                         </div>
 
                         {/* Texto - Derecha */}
-                        <div className={`space-y-6 order-1 lg:order-2 ${isActive ? 'animate-fade-in-right' : 'opacity-0'}`}>
+                        <div className={`space-y-6 text-center lg:text-left order-1 lg:order-2 ${isActive ? 'animate-fade-in-right' : 'opacity-0'}`}>
                             <h2
                                 className="leading-tight"
                                 style={getTitleStyle()}
@@ -184,7 +184,7 @@ export default function SlideByLayout({ slide, isActive }: SlideByLayoutProps) {
         return (
             <div
                 className="w-screen flex items-center justify-center relative"
-                style={{ height: 'calc(100vh - 80px)' }}
+                style={{ height: '100vh', paddingTop: '80px' }}
                 data-slide
             >
                 {/* Imagen de Fondo */}
