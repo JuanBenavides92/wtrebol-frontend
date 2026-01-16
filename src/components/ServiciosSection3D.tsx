@@ -1,7 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
 interface Service {
     id: number;
@@ -12,76 +14,9 @@ interface Service {
     icon: string;
     color: string;
     gradient: string;
+    buttonText?: string;
+    buttonLink?: string;
 }
-
-const services: Service[] = [
-    {
-        id: 1,
-        title: 'Mantenimiento Preventivo HVAC',
-        description: 'Nuestro servicio de mantenimiento preventivo es la clave para garantizar el rendimiento óptimo y prolongar la vida útil de tu sistema de climatización. Similar a un chequeo médico para tu equipo, nuestros técnicos certificados realizan inspecciones exhaustivas y ajustes precisos que previenen averías costosas antes de que ocurran.',
-        features: [
-            'Limpieza profunda de filtros y serpentines',
-            'Verificación del sistema de refrigerante',
-            'Inspección eléctrica completa',
-            'Optimización del flujo de aire',
-            'Calibración de termostato',
-            'Sistema de drenaje'
-        ],
-        benefits: [
-            'Reduce facturas de electricidad hasta un 30%',
-            'Previene averías inesperadas',
-            'Extiende la vida útil del equipo',
-            'Mejora la calidad del aire interior'
-        ],
-        icon: '🔧',
-        color: '#0EA5E9',
-        gradient: 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)'
-    },
-    {
-        id: 2,
-        title: 'Instalación Profesional de Sistemas HVAC',
-        description: 'La instalación correcta de tu sistema de climatización es fundamental para garantizar eficiencia energética, rendimiento óptimo y durabilidad a largo plazo. Nuestro equipo de expertos certificados maneja cada proyecto con precisión técnica y cumplimiento estricto de normativas de seguridad.',
-        features: [
-            'Evaluación técnica inicial',
-            'Selección del sistema ideal',
-            'Preparación del área',
-            'Instalación de unidades certificada',
-            'Conexiones profesionales',
-            'Pruebas y verificación completa'
-        ],
-        benefits: [
-            'Instalación certificada por técnicos licenciados',
-            'Cumplimiento de normativas locales',
-            'Garantía del fabricante y de instalación',
-            'Eficiencia energética optimizada'
-        ],
-        icon: '⚙️',
-        color: '#8B5CF6',
-        gradient: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)'
-    },
-    {
-        id: 3,
-        title: 'Reparación Especializada y Diagnóstico Avanzado',
-        description: 'Cuando tu sistema de climatización presenta fallas, nuestro equipo de técnicos certificados utiliza tecnología de diagnóstico avanzada para identificar la raíz del problema y ofrecer soluciones duraderas, no solo parches temporales.',
-        features: [
-            'Diagnóstico preciso con tecnología avanzada',
-            'Reparación de fallas eléctricas',
-            'Solución de fugas de refrigerante',
-            'Reparación de ruidos anormales',
-            'Corrección de problemas de enfriamiento',
-            'Servicio de emergencia 24/7'
-        ],
-        benefits: [
-            'Respuesta rápida ante emergencias',
-            'Técnicos certificados con experiencia',
-            'Repuestos originales de calidad',
-            'Garantía en todas las reparaciones'
-        ],
-        icon: '🛠️',
-        color: '#F59E0B',
-        gradient: 'linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)'
-    }
-];
 
 function ServiceCard({ service, index }: { service: Service; index: number }) {
     const ref = useRef<HTMLDivElement>(null);
@@ -184,14 +119,15 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
                     </div>
 
                     {/* CTA Button */}
-                    <motion.button
+                    <motion.a
+                        href={service.buttonLink || '/contacto'}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="px-8 py-4 rounded-xl font-bold text-white shadow-lg hover:shadow-2xl transition-all duration-300"
+                        className="inline-block px-8 py-4 rounded-xl font-bold text-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         style={{ background: service.gradient }}
                     >
-                        Solicitar Servicio
-                    </motion.button>
+                        {service.buttonText || 'Solicitar Servicio'}
+                    </motion.a>
                 </div>
             </div>
         </motion.div>
@@ -199,6 +135,97 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
 }
 
 export default function ServiciosSection3D() {
+    const [services, setServices] = useState<Service[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        loadServices();
+    }, []);
+
+    const loadServices = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(API_CONFIG.url('/api/content/service'));
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && Array.isArray(result.data)) {
+                    // Mapear datos del backend al formato esperado
+                    const mappedServices = result.data
+                        .filter((s: any) => s.isActive)
+                        .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+                        .map((s: any, index: number) => ({
+                            id: index + 1,
+                            title: s.title,
+                            description: s.description || '',
+                            features: s.data?.features || [],
+                            benefits: s.data?.benefits || [],
+                            icon: s.data?.icon || '🔧',
+                            color: s.data?.color || '#0EA5E9',
+                            gradient: s.data?.gradient || 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)',
+                            buttonText: s.data?.buttonText || 'Solicitar Servicio',
+                            buttonLink: s.data?.buttonLink || '/contacto',
+                        }));
+                    setServices(mappedServices);
+                } else {
+                    setError('No se pudieron cargar los servicios');
+                }
+            } else {
+                setError('Error al conectar con el servidor');
+            }
+        } catch (error) {
+            console.error('Error loading services:', error);
+            setError('Error al cargar servicios');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <section className="relative bg-white py-20">
+                <div className="container mx-auto px-6 flex items-center justify-center min-h-[400px]">
+                    <div className="text-center">
+                        <Loader2 className="h-12 w-12 text-sky-500 animate-spin mx-auto mb-4" />
+                        <p className="text-slate-600">Cargando servicios...</p>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    if (error) {
+        return (
+            <section className="relative bg-white py-20">
+                <div className="container mx-auto px-6 flex items-center justify-center min-h-[400px]">
+                    <div className="text-center">
+                        <p className="text-red-600 mb-4">{error}</p>
+                        <button
+                            onClick={loadServices}
+                            className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors"
+                        >
+                            Reintentar
+                        </button>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    if (services.length === 0) {
+        return (
+            <section className="relative bg-white py-20">
+                <div className="container mx-auto px-6 flex items-center justify-center min-h-[400px]">
+                    <div className="text-center">
+                        <p className="text-slate-600">No hay servicios disponibles en este momento.</p>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="relative bg-white overflow-hidden">
             {/* Header */}

@@ -1,50 +1,237 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Clock, DollarSign, Wrench, Calendar, Phone, Shield } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Clock, Wrench, Shield, Calendar, DollarSign, Phone, ArrowRight, ExternalLink } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
-const faqs = [
-    {
-        icon: Clock,
-        question: '¿Cada cuánto debo hacer mantenimiento a mi aire acondicionado?',
-        answer: 'Recomendamos realizar mantenimiento preventivo cada 6 meses para uso residencial y cada 3-4 meses para uso comercial. Esto garantiza eficiencia óptima y previene averías costosas.',
-        category: 'Mantenimiento'
-    },
-    {
-        icon: Wrench,
-        question: '¿Cuánto tiempo tarda una instalación de aire acondicionado?',
-        answer: 'Una instalación residencial típica toma entre 4-8 horas. Para sistemas comerciales o más complejos, puede tomar 1-3 días. Te proporcionamos un cronograma detallado en la cotización.',
-        category: 'Instalación'
-    },
-    {
-        icon: Shield,
-        question: '¿Qué garantía ofrecen en sus servicios?',
-        answer: 'Ofrecemos garantía de 1 año en mano de obra y respetamos la garantía del fabricante en equipos y repuestos. Todos nuestros servicios están respaldados por técnicos certificados.',
-        category: 'Garantía'
-    },
-    {
-        icon: Calendar,
-        question: '¿Trabajan fines de semana y días festivos?',
-        answer: 'Sí, trabajamos 7 días a la semana. Para emergencias, ofrecemos servicio 24/7 los 365 días del año. Los horarios regulares son de 8 AM a 8 PM.',
-        category: 'Horarios'
-    },
-    {
-        icon: DollarSign,
-        question: '¿Qué formas de pago aceptan?',
-        answer: 'Aceptamos efectivo, transferencias bancarias, tarjetas de crédito/débito y pagos digitales. También ofrecemos planes de financiamiento para proyectos grandes.',
-        category: 'Pagos'
-    },
-    {
-        icon: Phone,
-        question: '¿Cómo puedo agendar un servicio?',
-        answer: 'Puedes agendar llamándonos, por WhatsApp, o a través de nuestro sistema de citas online. Te confirmamos la cita en menos de 2 horas.',
-        category: 'Agendamiento'
+// Mapeo de iconos
+const iconMap: Record<string, any> = {
+    Clock,
+    Wrench,
+    Shield,
+    Calendar,
+    DollarSign,
+    Phone
+};
+
+interface RelatedLink {
+    text: string;
+    url: string;
+}
+
+interface BackContent {
+    detailedAnswer?: string;
+    tips?: string[];
+    relatedLinks?: RelatedLink[];
+}
+
+interface FAQData {
+    icon?: string;
+    category?: string;
+    color?: string;
+    gradient?: string;
+    backContent?: BackContent;
+}
+
+interface FAQ {
+    _id: string;
+    type: 'faq';
+    title: string;
+    description?: string;
+    isActive: boolean;
+    order?: number;
+    data?: FAQData;
+}
+
+async function getFAQs(): Promise<FAQ[]> {
+    try {
+        const response = await fetch(API_CONFIG.url('/api/content/faq?active=true'), {
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            console.error('Error fetching FAQs:', response.statusText);
+            return [];
+        }
+
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data)) {
+            return result.data.sort((a: FAQ, b: FAQ) => (a.order || 0) - (b.order || 0));
+        }
+
+        return [];
+    } catch (error) {
+        console.error('Error loading FAQs:', error);
+        return [];
     }
-];
+}
+
+function FlipCard({ faq, index }: { faq: FAQ; index: number }) {
+    const [isFlipped, setIsFlipped] = useState(false);
+
+    const Icon = iconMap[faq.data?.icon || 'Phone'];
+    const color = faq.data?.color || '#0EA5E9';
+    const gradient = faq.data?.gradient || 'from-sky-400 to-blue-500';
+    const backContent = faq.data?.backContent;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="group relative h-[480px]"
+            style={{ perspective: '1000px' }}
+        >
+            <div
+                className={`relative w-full h-full transition-transform duration-700 cursor-pointer`}
+                style={{
+                    transformStyle: 'preserve-3d',
+                    transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                }}
+                onClick={() => setIsFlipped(!isFlipped)}
+            >
+                {/* FRENTE DE LA CARD */}
+                <div
+                    className="absolute w-full h-full bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-slate-200"
+                    style={{
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden'
+                    }}
+                >
+                    {/* Icon */}
+                    <div
+                        className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+                        style={{ backgroundColor: color }}
+                    >
+                        <Icon className="w-8 h-8 text-white" />
+                    </div>
+
+                    {/* Category Badge */}
+                    {faq.data?.category && (
+                        <span className="inline-block mb-4 px-3 py-1 bg-sky-100 text-sky-700 text-xs font-semibold rounded-full">
+                            {faq.data.category}
+                        </span>
+                    )}
+
+                    {/* Question */}
+                    <h3 className="text-xl font-bold text-slate-900 mb-4 leading-tight">
+                        {faq.title}
+                    </h3>
+
+                    {/* Short Answer */}
+                    <p className="text-slate-600 leading-relaxed mb-6">
+                        {faq.description}
+                    </p>
+
+                    {/* Hint to flip */}
+                    <div className="absolute bottom-6 left-8 right-8 flex items-center justify-center gap-2 text-sm text-slate-400 group-hover:text-slate-600 transition-colors">
+                        <span>Haz clic para ver más detalles</span>
+                        <ArrowRight className="w-4 h-4" />
+                    </div>
+
+                    {/* Decorative line */}
+                    <div
+                        className="absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-b-2xl"
+                        style={{ backgroundColor: color }}
+                    />
+                </div>
+
+                {/* REVERSO DE LA CARD */}
+                <div
+                    className="absolute w-full h-full rounded-2xl p-8 shadow-lg"
+                    style={{
+                        backgroundColor: color,
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)'
+                    }}
+                >
+                    <div
+                        className="h-full flex flex-col text-white overflow-y-auto pr-2 custom-scrollbar"
+                        style={{
+                            scrollbarWidth: 'thin',
+                            scrollbarColor: 'rgba(255, 255, 255, 0.3) transparent'
+                        }}
+                    >
+                        {/* Detailed Answer */}
+                        {backContent?.detailedAnswer && (
+                            <div className="mb-6">
+                                <h4 className="text-lg font-bold mb-3">Respuesta Detallada</h4>
+                                <p className="text-sm opacity-95 leading-relaxed">
+                                    {backContent.detailedAnswer}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Tips */}
+                        {backContent?.tips && backContent.tips.length > 0 && (
+                            <div className="mb-6">
+                                <h4 className="text-lg font-bold mb-3">💡 Tips Útiles</h4>
+                                <div className="space-y-2">
+                                    {backContent.tips.map((tip, idx) => (
+                                        <div key={idx} className="flex items-start gap-2 text-sm">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 flex-shrink-0" />
+                                            <span className="opacity-95">{tip}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Related Links */}
+                        {backContent?.relatedLinks && backContent.relatedLinks.length > 0 && (
+                            <div className="mt-auto">
+                                <h4 className="text-lg font-bold mb-3">🔗 Enlaces Relacionados</h4>
+                                <div className="space-y-2">
+                                    {backContent.relatedLinks.map((link, idx) => (
+                                        <a
+                                            key={idx}
+                                            href={link.url}
+                                            className="flex items-center gap-2 text-sm bg-white/20 backdrop-blur-sm rounded-lg p-3 hover:bg-white/30 transition-colors"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <ExternalLink className="w-4 h-4" />
+                                            <span>{link.text}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Hint to flip back */}
+                        <div className="mt-4 text-center text-sm opacity-75">
+                            Haz clic para volver
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
 
 export default function FAQSection() {
-    const [openIndex, setOpenIndex] = useState<number | null>(null);
+    const [faqs, setFaqs] = useState<FAQ[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getFAQs().then(data => {
+            setFaqs(data);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="py-20 bg-white">
+                <div className="container mx-auto px-6">
+                    <div className="text-center text-slate-600">Cargando preguntas frecuentes...</div>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="py-20 bg-white relative overflow-hidden">
@@ -73,73 +260,18 @@ export default function FAQSection() {
                     </p>
                 </motion.div>
 
-                {/* FAQ Accordion */}
-                <div className="max-w-4xl mx-auto space-y-4">
-                    {faqs.map((faq, index) => {
-                        const Icon = faq.icon;
-                        const isOpen = openIndex === index;
-
-                        return (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                            >
-                                <button
-                                    onClick={() => setOpenIndex(isOpen ? null : index)}
-                                    className="w-full text-left bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-sky-400 transition-all duration-300 group"
-                                >
-                                    <div className="flex items-start gap-4">
-                                        {/* Icon */}
-                                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                            <Icon className="w-6 h-6 text-white" />
-                                        </div>
-
-                                        {/* Question */}
-                                        <div className="flex-1">
-                                            <div className="flex items-center justify-between gap-4">
-                                                <h3 className="text-lg font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
-                                                    {faq.question}
-                                                </h3>
-                                                <motion.div
-                                                    animate={{ rotate: isOpen ? 180 : 0 }}
-                                                    transition={{ duration: 0.3 }}
-                                                    className="flex-shrink-0"
-                                                >
-                                                    <ChevronDown className="w-6 h-6 text-slate-400 group-hover:text-sky-600" />
-                                                </motion.div>
-                                            </div>
-
-                                            {/* Category Badge */}
-                                            <span className="inline-block mt-2 px-3 py-1 bg-sky-100 text-sky-700 text-xs font-semibold rounded-full">
-                                                {faq.category}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* Answer */}
-                                    <AnimatePresence>
-                                        {isOpen && (
-                                            <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: 'auto', opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                transition={{ duration: 0.3 }}
-                                                className="overflow-hidden"
-                                            >
-                                                <p className="mt-4 pl-16 text-slate-600 leading-relaxed">
-                                                    {faq.answer}
-                                                </p>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </button>
-                            </motion.div>
-                        );
-                    })}
-                </div>
+                {/* FAQ Cards Grid */}
+                {faqs.length === 0 ? (
+                    <div className="text-center py-12 bg-slate-50 border border-slate-200 rounded-xl">
+                        <p className="text-slate-600 text-lg">No hay preguntas frecuentes disponibles en este momento.</p>
+                    </div>
+                ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                        {faqs.map((faq, index) => (
+                            <FlipCard key={faq._id} faq={faq} index={index} />
+                        ))}
+                    </div>
+                )}
 
                 {/* CTA */}
                 <motion.div
@@ -147,7 +279,7 @@ export default function FAQSection() {
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.6 }}
-                    className="text-center mt-12"
+                    className="text-center mt-16"
                 >
                     <p className="text-slate-600 mb-4">
                         ¿No encuentras la respuesta que buscas?

@@ -1,54 +1,224 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Award, Wrench, DollarSign, Smartphone } from 'lucide-react';
+import { Shield, Zap, Award, Wrench, DollarSign, Smartphone, ArrowRight } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
-const features = [
-    {
-        icon: Award,
-        title: 'Certificaciones Profesionales',
-        description: 'Técnicos certificados y licenciados con años de experiencia en sistemas HVAC',
-        color: '#0EA5E9',
-        gradient: 'from-sky-400 to-blue-500'
-    },
-    {
-        icon: Zap,
-        title: 'Respuesta Rápida',
-        description: 'Atención inmediata a tus solicitudes con tiempos de respuesta optimizados',
-        color: '#F59E0B',
-        gradient: 'from-amber-400 to-orange-500'
-    },
-    {
-        icon: Shield,
-        title: 'Garantía Total',
-        description: 'Todos nuestros servicios incluyen garantía completa en mano de obra y repuestos',
-        color: '#10B981',
-        gradient: 'from-emerald-400 to-green-500'
-    },
-    {
-        icon: Wrench,
-        title: 'Tecnología de Punta',
-        description: 'Equipos y herramientas de última generación para diagnósticos precisos',
-        color: '#8B5CF6',
-        gradient: 'from-purple-400 to-violet-500'
-    },
-    {
-        icon: DollarSign,
-        title: 'Precios Transparentes',
-        description: 'Cotizaciones claras sin costos ocultos. Sabes exactamente qué pagas',
-        color: '#EC4899',
-        gradient: 'from-pink-400 to-rose-500'
-    },
-    {
-        icon: Smartphone,
-        title: 'Seguimiento Digital',
-        description: 'Plataforma online para agendar, dar seguimiento y gestionar tus servicios',
-        color: '#06B6D4',
-        gradient: 'from-cyan-400 to-teal-500'
+// Mapeo de iconos
+const iconMap: Record<string, any> = {
+    Award,
+    Zap,
+    Shield,
+    Wrench,
+    DollarSign,
+    Smartphone
+};
+
+interface BackContent {
+    statistics?: Array<{ label: string; value: string }>;
+    details?: string[];
+    cta?: string;
+}
+
+interface AdvantageData {
+    icon?: string;
+    color?: string;
+    gradient?: string;
+    showButton?: boolean;
+    backContent?: BackContent;
+}
+
+interface Advantage {
+    _id: string;
+    type: 'advantage';
+    title: string;
+    description?: string;
+    imageUrl?: string;
+    buttonText?: string;
+    buttonLink?: string;
+    isActive: boolean;
+    order?: number;
+    data?: AdvantageData;
+}
+
+async function getAdvantages(): Promise<Advantage[]> {
+    try {
+        const response = await fetch(API_CONFIG.url('/api/content/advantage?active=true'), {
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            console.error('Error fetching advantages:', response.statusText);
+            return [];
+        }
+
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data)) {
+            return result.data.sort((a: Advantage, b: Advantage) => (a.order || 0) - (b.order || 0));
+        }
+
+        return [];
+    } catch (error) {
+        console.error('Error loading advantages:', error);
+        return [];
     }
-];
+}
+
+function FlipCard({ advantage, index }: { advantage: Advantage; index: number }) {
+    const [isFlipped, setIsFlipped] = useState(false);
+
+    const Icon = iconMap[advantage.data?.icon || 'Award'];
+    const color = advantage.data?.color || '#0EA5E9';
+    const gradient = advantage.data?.gradient || 'from-sky-400 to-blue-500';
+    const backContent = advantage.data?.backContent;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="group relative h-[420px]"
+            style={{ perspective: '1000px' }}
+        >
+            <div
+                className={`relative w-full h-full transition-transform duration-700 cursor-pointer`}
+                style={{
+                    transformStyle: 'preserve-3d',
+                    transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                }}
+                onClick={() => setIsFlipped(!isFlipped)}
+            >
+                {/* FRENTE DE LA CARD */}
+                <div
+                    className="absolute w-full h-full bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100"
+                    style={{
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden'
+                    }}
+                >
+                    {/* Icon */}
+                    <div
+                        className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+                        style={{ backgroundColor: color }}
+                    >
+                        <Icon className="w-8 h-8 text-white" />
+                    </div>
+
+                    {/* Content */}
+                    <h3 className="text-2xl font-bold text-slate-900 mb-3">
+                        {advantage.title}
+                    </h3>
+                    <p className="text-slate-600 leading-relaxed mb-6">
+                        {advantage.description}
+                    </p>
+
+                    {/* Hint to flip */}
+                    <div className="absolute bottom-6 left-8 right-8 flex items-center justify-center gap-2 text-sm text-slate-400 group-hover:text-slate-600 transition-colors">
+                        <span>Haz clic para ver más</span>
+                        <ArrowRight className="w-4 h-4" />
+                    </div>
+
+                    {/* Decorative line */}
+                    <div
+                        className="absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-b-2xl"
+                        style={{ backgroundColor: color }}
+                    />
+                </div>
+
+                {/* REVERSO DE LA CARD */}
+                <div
+                    className="absolute w-full h-full rounded-2xl p-8 shadow-lg"
+                    style={{
+                        backgroundColor: color,
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)'
+                    }}
+                >
+                    <div
+                        className="h-full flex flex-col text-white overflow-y-auto pr-2 custom-scrollbar"
+                        style={{
+                            scrollbarWidth: 'thin',
+                            scrollbarColor: 'rgba(255, 255, 255, 0.3) transparent'
+                        }}
+                    >
+                        {/* Estadísticas */}
+                        {backContent?.statistics && backContent.statistics.length > 0 && (
+                            <div className="grid grid-cols-3 gap-3 mb-6">
+                                {backContent.statistics.map((stat, idx) => (
+                                    <div key={idx} className="text-center bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                                        <div className="text-2xl font-bold">{stat.value}</div>
+                                        <div className="text-xs opacity-90 mt-1">{stat.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Detalles */}
+                        {backContent?.details && backContent.details.length > 0 && (
+                            <div className="flex-1 space-y-2 mb-4 overflow-y-auto">
+                                {backContent.details.map((detail, idx) => (
+                                    <div key={idx} className="flex items-start gap-2 text-sm">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 flex-shrink-0" />
+                                        <span className="opacity-95">{detail}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* CTA */}
+                        {backContent?.cta && (
+                            <div className="text-sm font-medium bg-white/20 backdrop-blur-sm rounded-lg p-4 mt-auto">
+                                {backContent.cta}
+                            </div>
+                        )}
+
+                        {/* Botón de acción */}
+                        {advantage.data?.showButton && advantage.buttonText && advantage.buttonLink && (
+                            <a
+                                href={advantage.buttonLink}
+                                className="mt-4 bg-white text-slate-900 font-semibold py-3 px-6 rounded-lg hover:bg-slate-100 transition-colors text-center"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                {advantage.buttonText}
+                            </a>
+                        )}
+
+                        {/* Hint to flip back */}
+                        <div className="mt-4 text-center text-sm opacity-75">
+                            Haz clic para volver
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
 
 export default function PorQueElegirnosSection() {
+    const [advantages, setAdvantages] = useState<Advantage[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getAdvantages().then(data => {
+            setAdvantages(data);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+                <div className="container mx-auto px-6">
+                    <div className="text-center text-slate-600">Cargando ventajas...</div>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
             {/* Decorative background */}
@@ -75,40 +245,17 @@ export default function PorQueElegirnosSection() {
                 </motion.div>
 
                 {/* Features Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                    {features.map((feature, index) => {
-                        const Icon = feature.icon;
-                        return (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                whileHover={{ y: -8, scale: 1.02 }}
-                                className="group relative"
-                            >
-                                <div className="h-full bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100">
-                                    {/* Icon */}
-                                    <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                                        <Icon className="w-8 h-8 text-white" />
-                                    </div>
-
-                                    {/* Content */}
-                                    <h3 className="text-2xl font-bold text-slate-900 mb-3">
-                                        {feature.title}
-                                    </h3>
-                                    <p className="text-slate-600 leading-relaxed">
-                                        {feature.description}
-                                    </p>
-
-                                    {/* Decorative gradient line */}
-                                    <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-b-2xl`} />
-                                </div>
-                            </motion.div>
-                        );
-                    })}
-                </div>
+                {advantages.length === 0 ? (
+                    <div className="text-center py-12 bg-white/50 border border-slate-200 rounded-xl">
+                        <p className="text-slate-600 text-lg">No hay ventajas disponibles en este momento.</p>
+                    </div>
+                ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                        {advantages.map((advantage, index) => (
+                            <FlipCard key={advantage._id} advantage={advantage} index={index} />
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );

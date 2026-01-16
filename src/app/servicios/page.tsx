@@ -51,39 +51,54 @@ export const metadata: Metadata = {
     },
 };
 
-export default function ServiciosPage() {
-    const services = [
-        {
-            title: 'Climatización Integral',
-            description: 'Control de temperatura ambiental con sistemas eficientes y sostenibles',
-            features: ['Splits inverter', 'Cassettes 4 vías', 'Piso cielo', 'Sistemas centralizados'],
-        },
-        {
-            title: 'Refrigeración Industrial',
-            description: 'Soluciones de refrigeración para procesos productivos y conservación',
-            features: ['Enfriadores de proceso', 'Cuartos fríos', 'Sistemas de conservación', 'Mantenimiento preventivo'],
-        },
-        {
-            title: 'Mantenimiento Experto',
-            description: 'Servicio técnico preventivo, correctivo y reconstructivo',
-            features: ['Diagnóstico preciso', 'Limpieza de componentes', 'Optimización de consumo', 'Garantía en reparaciones'],
-        },
-        {
-            title: 'Obra Civil',
-            description: 'Adecuaciones locativas y preparación de espacios',
-            features: ['Diseño de ductos', 'Instalación de tuberías', 'Acondicionamiento de espacios', 'Asesoría técnica'],
-        },
-        {
-            title: 'Instalación Profesional',
-            description: 'Montaje de sistemas completos con técnicos certificados',
-            features: ['Instalación residencial', 'Instalación comercial', 'Sistemas industriales', 'Puesta en marcha'],
-        },
-        {
-            title: 'Asesoría Integral',
-            description: 'Proyectos personalizados según tus necesidades',
-            features: ['Evaluación de espacios', 'Recomendaciones técnicas', 'Presupuestos detallados', 'Seguimiento post-venta'],
-        },
-    ];
+interface ServiceData {
+    features?: string[];
+    benefits?: string[];
+    icon?: string;
+    color?: string;
+    gradient?: string;
+}
+
+interface Service {
+    _id: string;
+    type: 'service';
+    title: string;
+    description?: string;
+    imageUrl?: string;
+    isActive: boolean;
+    order?: number;
+    data?: ServiceData;
+    createdAt: string;
+    updatedAt: string;
+}
+
+async function getServices(): Promise<Service[]> {
+    try {
+        const response = await fetch('http://localhost:5000/api/content/service?active=true', {
+            cache: 'no-store', // Siempre obtener datos frescos
+        });
+
+        if (!response.ok) {
+            console.error('Error fetching services:', response.statusText);
+            return [];
+        }
+
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data)) {
+            // Ordenar por el campo order
+            return result.data.sort((a: Service, b: Service) => (a.order || 0) - (b.order || 0));
+        }
+
+        return [];
+    } catch (error) {
+        console.error('Error loading services:', error);
+        return [];
+    }
+}
+
+export default async function ServiciosPage() {
+    const services = await getServices();
 
     return (
         <>
@@ -91,25 +106,67 @@ export default function ServiciosPage() {
                 <h1 className="text-4xl font-bold text-sky-500 mb-4">Nuestros Servicios</h1>
                 <p className="text-gray-400 mb-12 text-lg">Soluciones integrales diseñadas para tus necesidades</p>
 
-                <div className="grid md:grid-cols-2 gap-8">
-                    {services.map((service, index) => (
-                        <div
-                            key={index}
-                            className="bg-slate-800/30 border border-white/10 rounded-xl p-6 hover:border-sky-500/50 transition-colors"
-                        >
-                            <h3 className="text-xl font-bold text-white mb-2">{service.title}</h3>
-                            <p className="text-gray-400 mb-4">{service.description}</p>
-                            <div className="space-y-2">
-                                {service.features.map((feature) => (
-                                    <div key={feature} className="flex items-center gap-3 text-gray-300">
-                                        <CheckCircle2 className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-                                        <span className="text-sm">{feature}</span>
+                {services.length === 0 ? (
+                    <div className="text-center py-12 bg-slate-800/30 border border-white/10 rounded-xl">
+                        <p className="text-gray-400 text-lg">No hay servicios disponibles en este momento.</p>
+                    </div>
+                ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {services.map((service) => {
+                            const features = service.data?.features || [];
+                            const benefits = service.data?.benefits || [];
+                            const icon = service.data?.icon || '🔧';
+                            const gradient = service.data?.gradient || 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)';
+
+                            return (
+                                <div
+                                    key={service._id}
+                                    className="bg-slate-800/30 border border-white/10 rounded-xl p-6 hover:border-sky-500/50 transition-all hover:shadow-lg hover:shadow-sky-500/20"
+                                    style={{
+                                        borderImage: `${gradient} 1`,
+                                    }}
+                                >
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <span className="text-4xl">{icon}</span>
+                                        <h3 className="text-xl font-bold text-white">{service.title}</h3>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+
+                                    {service.description && (
+                                        <p className="text-gray-400 mb-6 text-sm leading-relaxed">{service.description}</p>
+                                    )}
+
+                                    {features.length > 0 && (
+                                        <div className="mb-6">
+                                            <h4 className="text-sm font-semibold text-sky-400 mb-3">Características:</h4>
+                                            <div className="space-y-2">
+                                                {features.map((feature, idx) => (
+                                                    <div key={idx} className="flex items-start gap-2 text-gray-300">
+                                                        <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                                        <span className="text-xs">{feature}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {benefits.length > 0 && (
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-sky-400 mb-3">Beneficios:</h4>
+                                            <div className="space-y-2">
+                                                {benefits.map((benefit, idx) => (
+                                                    <div key={idx} className="flex items-start gap-2 text-gray-300">
+                                                        <CheckCircle2 className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                                                        <span className="text-xs">{benefit}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </PageLayout>
             <Footer showFooter={true} isStatic={true} />
         </>

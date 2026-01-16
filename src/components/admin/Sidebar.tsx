@@ -15,7 +15,9 @@ import {
     Users,
     ChevronRight,
     LogOut,
-    Bell
+    Bell,
+    Award,
+    HelpCircle
 } from 'lucide-react';
 
 const navigation = [
@@ -46,6 +48,20 @@ const navigation = [
         icon: Wrench,
         badge: null,
         gradient: 'from-orange-400 to-red-500'
+    },
+    {
+        name: 'Ventajas',
+        href: '/admin/ventajas',
+        icon: Award,
+        badge: null,
+        gradient: 'from-yellow-400 to-amber-500'
+    },
+    {
+        name: 'FAQs',
+        href: '/admin/faqs',
+        icon: HelpCircle,
+        badge: null,
+        gradient: 'from-indigo-400 to-purple-500'
     },
     {
         name: 'Citas',

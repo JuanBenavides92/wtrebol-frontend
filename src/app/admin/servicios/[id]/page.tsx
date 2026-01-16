@@ -11,6 +11,13 @@ interface ServiceFormData {
     description: string;
     imageUrl: string;
     isActive: boolean;
+    features: string[];
+    benefits: string[];
+    icon: string;
+    color: string;
+    gradient: string;
+    buttonText: string;
+    buttonLink: string;
 }
 
 export default function ServiceFormPage() {
@@ -25,6 +32,13 @@ export default function ServiceFormPage() {
         description: '',
         imageUrl: '',
         isActive: true,
+        features: [],
+        benefits: [],
+        icon: '🔧',
+        color: '#0EA5E9',
+        gradient: 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)',
+        buttonText: 'Solicitar Servicio',
+        buttonLink: '/contacto',
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -58,6 +72,13 @@ export default function ServiceFormPage() {
                     description: data.description || '',
                     imageUrl: data.imageUrl || '',
                     isActive: data.isActive ?? true,
+                    features: data.data?.features || [],
+                    benefits: data.data?.benefits || [],
+                    icon: data.data?.icon || '🔧',
+                    color: data.data?.color || '#0EA5E9',
+                    gradient: data.data?.gradient || 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)',
+                    buttonText: data.data?.buttonText || 'Solicitar Servicio',
+                    buttonLink: data.data?.buttonLink || '/contacto',
                 });
             }
         } catch (error) {
@@ -93,7 +114,22 @@ export default function ServiceFormPage() {
                 method: isEdit ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ type: 'service', ...formData }),
+                body: JSON.stringify({
+                    type: 'service',
+                    title: formData.title,
+                    description: formData.description,
+                    imageUrl: formData.imageUrl,
+                    isActive: formData.isActive,
+                    data: {
+                        features: formData.features,
+                        benefits: formData.benefits,
+                        icon: formData.icon,
+                        color: formData.color,
+                        gradient: formData.gradient,
+                        buttonText: formData.buttonText,
+                        buttonLink: formData.buttonLink,
+                    }
+                }),
             });
 
             if (response.ok) {
@@ -191,6 +227,174 @@ export default function ServiceFormPage() {
                             onUploadError={(error) => setError(error)}
                         />
                     )}
+                </div>
+
+                {/* Features - Dynamic List */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                        ¿Qué incluye? (Features)
+                    </label>
+                    <div className="space-y-2">
+                        {formData.features.map((feature, index) => (
+                            <div key={index} className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={feature}
+                                    onChange={(e) => {
+                                        const newFeatures = [...formData.features];
+                                        newFeatures[index] = e.target.value;
+                                        setFormData(prev => ({ ...prev, features: newFeatures }));
+                                    }}
+                                    className="flex-1 bg-slate-800 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                                    placeholder="Ej: Limpieza profunda de filtros"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newFeatures = formData.features.filter((_, i) => i !== index);
+                                        setFormData(prev => ({ ...prev, features: newFeatures }));
+                                    }}
+                                    className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, features: [...prev.features, ''] }))}
+                            className="w-full px-4 py-2 bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 rounded-lg transition-colors text-sm font-medium"
+                        >
+                            + Agregar Feature
+                        </button>
+                    </div>
+                </div>
+
+                {/* Benefits - Dynamic List */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Beneficios
+                    </label>
+                    <div className="space-y-2">
+                        {formData.benefits.map((benefit, index) => (
+                            <div key={index} className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={benefit}
+                                    onChange={(e) => {
+                                        const newBenefits = [...formData.benefits];
+                                        newBenefits[index] = e.target.value;
+                                        setFormData(prev => ({ ...prev, benefits: newBenefits }));
+                                    }}
+                                    className="flex-1 bg-slate-800 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                                    placeholder="Ej: Reduce facturas de electricidad"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newBenefits = formData.benefits.filter((_, i) => i !== index);
+                                        setFormData(prev => ({ ...prev, benefits: newBenefits }));
+                                    }}
+                                    className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, benefits: [...prev.benefits, ''] }))}
+                            className="w-full px-4 py-2 bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 rounded-lg transition-colors text-sm font-medium"
+                        >
+                            + Agregar Beneficio
+                        </button>
+                    </div>
+                </div>
+
+                {/* Icon */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Ícono (Emoji)
+                    </label>
+                    <input
+                        type="text"
+                        value={formData.icon}
+                        onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
+                        className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                        placeholder="Ej: 🔧, ⚙️, 🛠️"
+                        maxLength={2}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Usa un emoji para representar el servicio</p>
+                </div>
+
+                {/* Color and Gradient */}
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Color Principal
+                        </label>
+                        <div className="space-y-2">
+                            <input
+                                type="color"
+                                value={formData.color}
+                                onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+                                className="w-full h-12 bg-slate-800 border border-white/10 rounded-lg cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={formData.color}
+                                onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+                                className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                                placeholder="#0EA5E9"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Gradiente CSS
+                        </label>
+                        <div className="space-y-2">
+                            <div
+                                className="h-12 rounded-lg border border-white/10"
+                                style={{ background: formData.gradient }}
+                            />
+                            <input
+                                type="text"
+                                value={formData.gradient}
+                                onChange={(e) => setFormData(prev => ({ ...prev, gradient: e.target.value }))}
+                                className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-sm"
+                                placeholder="linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Button Text and Link */}
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Texto del Botón
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.buttonText}
+                            onChange={(e) => setFormData(prev => ({ ...prev, buttonText: e.target.value }))}
+                            className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                            placeholder="Solicitar Servicio"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Enlace del Botón
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.buttonLink}
+                            onChange={(e) => setFormData(prev => ({ ...prev, buttonLink: e.target.value }))}
+                            className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                            placeholder="/contacto"
+                        />
+                    </div>
                 </div>
 
                 <div>
