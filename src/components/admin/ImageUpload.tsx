@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import API_CONFIG from '@/lib/config';
 import { Upload, X, Image as ImageIcon, Loader2, CheckCircle } from 'lucide-react';
 
 interface ImageUploadProps {
@@ -56,7 +57,7 @@ export default function ImageUpload({ onUploadSuccess, onUploadError }: ImageUpl
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await fetch('http://localhost:5000/api/upload', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.UPLOAD), {
                 method: 'POST',
                 credentials: 'include',
                 body: formData,
@@ -203,3 +204,4 @@ export default function ImageUpload({ onUploadSuccess, onUploadError }: ImageUpl
         </div>
     );
 }
+

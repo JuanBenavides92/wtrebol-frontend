@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
+import API_CONFIG from '@/lib/config';
 import {
     LayoutDashboard,
     Loader2,
@@ -135,11 +136,11 @@ export default function AdminDashboard() {
         setLoadingStats(true);
         try {
             const [slidesRes, productsRes, servicesRes, appointmentsRes, techniciansRes] = await Promise.all([
-                fetch('http://localhost:5000/api/content?type=slide', { credentials: 'include' }),
-                fetch('http://localhost:5000/api/content?type=product', { credentials: 'include' }),
-                fetch('http://localhost:5000/api/content?type=service', { credentials: 'include' }),
-                fetch('http://localhost:5000/api/appointments', { credentials: 'include' }),
-                fetch('http://localhost:5000/api/technicians', { credentials: 'include' })
+                fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.SLIDES), { credentials: 'include' }),
+                fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.PRODUCTS), { credentials: 'include' }),
+                fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.SERVICES), { credentials: 'include' }),
+                fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.APPOINTMENTS), { credentials: 'include' }),
+                fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.TECHNICIANS), { credentials: 'include' })
             ]);
 
             const slides = await slidesRes.json();
@@ -328,3 +329,4 @@ export default function AdminDashboard() {
         </div>
     );
 }
+

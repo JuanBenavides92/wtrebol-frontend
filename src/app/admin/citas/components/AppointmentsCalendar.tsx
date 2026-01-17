@@ -1,4 +1,4 @@
-'use client';
+'use client';import API_CONFIG from '@/lib/config';
 
 import { useState, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
@@ -122,7 +122,7 @@ export default function AppointmentsCalendar() {
 
     const loadAppointments = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/appointments', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.APPOINTMENTS), {
                 credentials: 'include'
             });
 
@@ -145,7 +145,7 @@ export default function AppointmentsCalendar() {
 
     const loadTimeBlocks = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/time-blocks', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.TIME_BLOCKS), {
                 credentials: 'include'
             });
 
@@ -256,7 +256,7 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
             // TODO: Obtener el ID del usuario actual del contexto de autenticación
             const userId = '507f1f77bcf86cd799439011'; // Placeholder
 
-            const response = await fetch('http://localhost:5000/api/time-blocks', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.TIME_BLOCKS), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -285,7 +285,7 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
 
     const handleDeleteBlock = async (blockId: string) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/time-blocks/${blockId}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.TIME_BLOCKS}/${blockId}`), {
                 method: 'DELETE',
                 credentials: 'include'
             });
@@ -307,7 +307,7 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
     // Handler para actualizar cita desde el modal de detalles
     const handleUpdateAppointment = async (appointmentId: string, updates: any) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/appointments/${appointmentId}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${appointmentId}`), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -340,7 +340,7 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
     // Handler para eliminar cita desde el modal de detalles
     const handleDeleteAppointment = async (appointmentId: string) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/appointments/${appointmentId}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${appointmentId}`), {
                 method: 'DELETE',
                 credentials: 'include'
             });
@@ -396,7 +396,7 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
             }
 
             try {
-                const response = await fetch(`http://localhost:5000/api/appointments/${apt._id}`, {
+                const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${apt._id}`), {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -431,7 +431,7 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
             }
 
             try {
-                const response = await fetch(`http://localhost:5000/api/time-blocks/${block._id}`, {
+                const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.TIME_BLOCKS}/${block._id}`), {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -472,7 +472,7 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
             const apt = info.event.extendedProps.appointment;
 
             try {
-                const response = await fetch(`http://localhost:5000/api/appointments/${apt._id}`, {
+                const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${apt._id}`), {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -499,7 +499,7 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
             const block = info.event.extendedProps.timeBlock;
 
             try {
-                const response = await fetch(`http://localhost:5000/api/time-blocks/${block._id}`, {
+                const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.TIME_BLOCKS}/${block._id}`), {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -666,3 +666,4 @@ ${block.description ? `\nDescripción: ${block.description}` : ''}
         </div>
     );
 }
+

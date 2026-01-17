@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, ShoppingBag } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
 interface Product {
     _id: string;
@@ -39,7 +40,7 @@ export default function ProductsPage() {
     const loadProducts = async () => {
         setIsLoadingProducts(true);
         try {
-            const response = await fetch('http://localhost:5000/api/content/product', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.PRODUCTS), {
                 credentials: 'include',
             });
 
@@ -62,7 +63,7 @@ export default function ProductsPage() {
 
     const toggleActive = async (id: string, currentStatus: boolean) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/content/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -79,7 +80,7 @@ export default function ProductsPage() {
         if (!confirm('¿Estás seguro de eliminar este producto?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/content/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`), {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -212,3 +213,4 @@ export default function ProductsPage() {
         </div>
     );
 }
+

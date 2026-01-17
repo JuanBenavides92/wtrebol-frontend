@@ -238,3 +238,4 @@ export default function SlideByLayout({ slide, isActive }: SlideByLayoutProps) {
     // Fallback (por si acaso)
     return null;
 }
+

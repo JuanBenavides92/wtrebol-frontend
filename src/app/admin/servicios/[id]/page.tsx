@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import ImageUpload from '@/components/admin/ImageUpload';
+import API_CONFIG from '@/lib/config';
 
 interface ServiceFormData {
     title: string;
@@ -59,7 +60,7 @@ export default function ServiceFormPage() {
     const loadService = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/content/item/${serviceId}`, {
+            const response = await fetch(API_CONFIG.url(`/api/content/item/${serviceId}`), {
                 credentials: 'include',
             });
 
@@ -107,8 +108,8 @@ export default function ServiceFormPage() {
 
         try {
             const url = isEdit
-                ? `http://localhost:5000/api/content/${serviceId}`
-                : 'http://localhost:5000/api/content';
+                ? API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${serviceId}`)
+                : API_CONFIG.url(API_CONFIG.ENDPOINTS.CONTENT);
 
             const response = await fetch(url, {
                 method: isEdit ? 'PUT' : 'POST',

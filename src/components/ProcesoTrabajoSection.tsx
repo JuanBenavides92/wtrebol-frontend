@@ -162,3 +162,4 @@ export default function ProcesoTrabajoSection() {
         </section>
     );
 }
+

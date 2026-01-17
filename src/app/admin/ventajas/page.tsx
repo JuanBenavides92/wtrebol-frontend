@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Award } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
 interface Advantage {
     _id: string;
@@ -42,7 +43,7 @@ export default function AdvantagesPage() {
     const loadAdvantages = async () => {
         setIsLoadingAdvantages(true);
         try {
-            const response = await fetch('http://localhost:5000/api/content/advantage', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.ADVANTAGES), {
                 credentials: 'include',
             });
 
@@ -66,7 +67,7 @@ export default function AdvantagesPage() {
 
     const toggleActive = async (id: string, currentStatus: boolean) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/content/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -83,7 +84,7 @@ export default function AdvantagesPage() {
         if (!confirm('¿Estás seguro de eliminar esta ventaja?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/content/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`), {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -218,3 +219,4 @@ export default function AdvantagesPage() {
         </div>
     );
 }
+

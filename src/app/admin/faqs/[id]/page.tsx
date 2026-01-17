@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ArrowLeft, Save, Loader2, Plus, X } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
 interface RelatedLink {
     text: string;
@@ -62,7 +63,7 @@ export default function FAQFormPage() {
     const loadFAQ = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/content/item/${faqId}`, {
+            const response = await fetch(API_CONFIG.url(`/api/content/item/${faqId}`), {
                 credentials: 'include',
             });
 
@@ -103,8 +104,8 @@ export default function FAQFormPage() {
 
         try {
             const url = isEdit
-                ? `http://localhost:5000/api/content/${faqId}`
-                : 'http://localhost:5000/api/content';
+                ? API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${faqId}`)
+                : API_CONFIG.url(API_CONFIG.ENDPOINTS.CONTENT);
 
             const response = await fetch(url, {
                 method: isEdit ? 'PUT' : 'POST',

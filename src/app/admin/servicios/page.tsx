@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, Wrench } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
 interface Service {
     _id: string;
@@ -37,7 +38,7 @@ export default function ServicesPage() {
     const loadServices = async () => {
         setIsLoadingServices(true);
         try {
-            const response = await fetch('http://localhost:5000/api/content/service', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.SERVICES), {
                 credentials: 'include',
             });
 
@@ -60,7 +61,7 @@ export default function ServicesPage() {
 
     const toggleActive = async (id: string, currentStatus: boolean) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/content/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -77,7 +78,7 @@ export default function ServicesPage() {
         if (!confirm('¿Estás seguro de eliminar este servicio?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/content/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`), {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -203,3 +204,4 @@ export default function ServicesPage() {
         </div>
     );
 }
+

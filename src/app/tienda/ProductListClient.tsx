@@ -26,3 +26,4 @@ export default function ProductListClient({ products }: ProductListClientProps) 
         </div>
     );
 }
+

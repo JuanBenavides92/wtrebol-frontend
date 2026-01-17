@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ArrowLeft, Save, Loader2, Plus, X } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
 interface Statistic {
     label: string;
@@ -70,7 +71,7 @@ export default function AdvantageFormPage() {
     const loadAdvantage = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/content/item/${advantageId}`, {
+            const response = await fetch(API_CONFIG.url(`/api/content/item/${advantageId}`), {
                 credentials: 'include',
             });
 
@@ -115,8 +116,8 @@ export default function AdvantageFormPage() {
 
         try {
             const url = isEdit
-                ? `http://localhost:5000/api/content/${advantageId}`
-                : 'http://localhost:5000/api/content';
+                ? API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${advantageId}`)
+                : API_CONFIG.url(API_CONFIG.ENDPOINTS.CONTENT);
 
             const response = await fetch(url, {
                 method: isEdit ? 'PUT' : 'POST',

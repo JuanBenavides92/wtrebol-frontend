@@ -74,8 +74,9 @@ interface Service {
 
 async function getServices(): Promise<Service[]> {
     try {
-        const response = await fetch('http://localhost:5000/api/content/service?active=true', {
-            cache: 'no-store', // Siempre obtener datos frescos
+        const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+        const response = await fetch(`${API_URL}/api/content/service?active=true`, {
+            next: { revalidate: 60 }, // Revalidar cada 60 segundos
         });
 
         if (!response.ok) {
@@ -172,3 +173,4 @@ export default async function ServiciosPage() {
         </>
     );
 }
+

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import API_CONFIG from '@/lib/config';
 import {
     Filter,
     Calendar,
@@ -114,7 +115,7 @@ export default function AppointmentsTable({ onRefresh }: AppointmentsTableProps)
             if (filter.type) params.append('type', filter.type);
             if (filter.date) params.append('date', filter.date);
 
-            const response = await fetch(`http://localhost:5000/api/appointments?${params}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}?${params}`), {
                 credentials: 'include'
             });
 
@@ -135,7 +136,7 @@ export default function AppointmentsTable({ onRefresh }: AppointmentsTableProps)
         if (!confirm('¿Estás seguro de eliminar esta cita?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/appointments/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${id}`), {
                 method: 'DELETE',
                 credentials: 'include'
             });

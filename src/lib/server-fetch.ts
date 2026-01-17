@@ -1,11 +1,12 @@
 /**
- * Server-side data fetching functions
- * These functions run ONLY on the server for SSR/SSG
+ * Server-side fetch utility for WTREBOL
+ * Used for server components that need to fetch data
  */
 
+import { cookies } from 'next/headers';
 import { Content } from '@/hooks/useContent';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 /**
  * Fetch content by type from the backend (Server-side)

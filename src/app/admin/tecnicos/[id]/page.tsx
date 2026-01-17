@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, User, Mail, Phone, Wrench, Save, X, Loader2 } from 'lucide-react';
+import API_CONFIG from '@/lib/config';
 
 export default function TechnicianFormPage() {
     const router = useRouter();
@@ -41,7 +42,7 @@ export default function TechnicianFormPage() {
     const loadTechnician = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/technicians/${technicianId}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.TECHNICIANS}/${technicianId}`), {
                 credentials: 'include'
             });
             if (response.ok) {
@@ -65,8 +66,8 @@ export default function TechnicianFormPage() {
 
         try {
             const url = isEditing
-                ? `http://localhost:5000/api/technicians/${technicianId}`
-                : 'http://localhost:5000/api/technicians';
+                ? API_CONFIG.url(`${API_CONFIG.ENDPOINTS.TECHNICIANS}/${technicianId}`)
+                : API_CONFIG.url(API_CONFIG.ENDPOINTS.TECHNICIANS);
 
             const method = isEditing ? 'PUT' : 'POST';
 

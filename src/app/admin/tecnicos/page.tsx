@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import API_CONFIG from '@/lib/config';
 
 interface Technician {
     _id: string;
@@ -38,7 +39,7 @@ export default function TechniciansPage() {
     const loadTechnicians = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/technicians', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.TECHNICIANS), {
                 credentials: 'include'
             });
 
@@ -59,7 +60,7 @@ export default function TechniciansPage() {
         if (!confirm('¿Estás seguro de eliminar este técnico?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/technicians/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.TECHNICIANS}/${id}`), {
                 method: 'DELETE',
                 credentials: 'include'
             });
@@ -74,7 +75,7 @@ export default function TechniciansPage() {
 
     const toggleActive = async (id: string, currentStatus: boolean) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/technicians/${id}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.TECHNICIANS}/${id}`), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -190,3 +191,4 @@ export default function TechniciansPage() {
         </div>
     );
 }
+

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import API_CONFIG from '@/lib/config';
 
 interface AppointmentSettings {
     businessHours: Record<string, { start: string; end: string; enabled: boolean }>;
@@ -49,7 +50,7 @@ export default function ConfigurationPage() {
     const loadSettings = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/appointment-settings', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.APPOINTMENT_SETTINGS), {
                 credentials: 'include'
             });
             if (response.ok) {
@@ -69,7 +70,7 @@ export default function ConfigurationPage() {
         setIsSaving(true);
         setMessage('');
         try {
-            const response = await fetch('http://localhost:5000/api/appointment-settings', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.APPOINTMENT_SETTINGS), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -344,3 +345,4 @@ export default function ConfigurationPage() {
         </div>
     );
 }
+

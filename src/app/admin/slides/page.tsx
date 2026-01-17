@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import API_CONFIG from '@/lib/config';
 import {
     Plus,
     Edit,
@@ -179,9 +180,10 @@ export default function SlidesPage() {
     const loadSlides = async () => {
         setIsLoadingSlides(true);
         try {
-            const response = await fetch('http://localhost:5000/api/content/slide', {
-                credentials: 'include',
-            });
+            const response = await fetch(
+                API_CONFIG.url(API_CONFIG.ENDPOINTS.SLIDES),
+                API_CONFIG.fetchOptions()
+            );
 
             if (response.ok) {
                 const result = await response.json();
@@ -228,14 +230,13 @@ export default function SlidesPage() {
         try {
             // Actualizar cada slide con su nuevo orden
             const updatePromises = orderedSlides.map((slide, index) =>
-                fetch(`http://localhost:5000/api/content/${slide._id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ order: index + 1 }),
-                })
+                fetch(
+                    API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${slide._id}`),
+                    API_CONFIG.fetchOptions({
+                        method: 'PUT',
+                        body: JSON.stringify({ order: index + 1 }),
+                    })
+                )
             );
 
             await Promise.all(updatePromises);
@@ -251,14 +252,13 @@ export default function SlidesPage() {
 
     const toggleActive = async (id: string, currentStatus: boolean) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/content/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ isActive: !currentStatus }),
-            });
+            const response = await fetch(
+                API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`),
+                API_CONFIG.fetchOptions({
+                    method: 'PUT',
+                    body: JSON.stringify({ isActive: !currentStatus }),
+                })
+            );
 
             if (response.ok) {
                 loadSlides();
@@ -272,10 +272,10 @@ export default function SlidesPage() {
         if (!confirm('¿Estás seguro de eliminar este slide?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/content/${id}`, {
-                method: 'DELETE',
-                credentials: 'include',
-            });
+            const response = await fetch(
+                API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`),
+                API_CONFIG.fetchOptions({ method: 'DELETE' })
+            );
 
             if (response.ok) {
                 loadSlides();
@@ -391,3 +391,4 @@ export default function SlidesPage() {
         </div>
     );
 }
+

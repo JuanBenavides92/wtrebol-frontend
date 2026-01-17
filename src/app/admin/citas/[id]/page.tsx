@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import API_CONFIG from '@/lib/config';
 
 interface Technician {
     _id: string;
@@ -60,7 +61,7 @@ export default function AppointmentFormPage() {
 
     const loadTechnicians = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/technicians?active=true', {
+            const response = await fetch(API_CONFIG.url(API_CONFIG.ENDPOINTS.TECHNICIANS + '?active=true'), {
                 credentials: 'include'
             });
             if (response.ok) {
@@ -77,7 +78,7 @@ export default function AppointmentFormPage() {
     const loadAppointment = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/appointments/${appointmentId}`, {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${appointmentId}`), {
                 credentials: 'include'
             });
             if (response.ok) {
@@ -108,7 +109,7 @@ export default function AppointmentFormPage() {
     const loadAvailableSlots = async () => {
         try {
             const response = await fetch(
-                `http://localhost:5000/api/public/available-slots?date=${formData.scheduledDate}&serviceType=${formData.type}`
+                API_CONFIG.url(`${API_CONFIG.ENDPOINTS.AVAILABLE_SLOTS}?date=${formData.scheduledDate}&serviceType=${formData.type}`)
             );
             if (response.ok) {
                 const result = await response.json();
@@ -128,8 +129,8 @@ export default function AppointmentFormPage() {
 
         try {
             const url = isEditing
-                ? `http://localhost:5000/api/appointments/${appointmentId}`
-                : 'http://localhost:5000/api/appointments';
+                ? API_CONFIG.url(`${API_CONFIG.ENDPOINTS.APPOINTMENTS}/${appointmentId}`)
+                : API_CONFIG.url(API_CONFIG.ENDPOINTS.APPOINTMENTS);
 
             const method = isEditing ? 'PUT' : 'POST';
 

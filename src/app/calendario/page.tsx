@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import Footer from '@/components/Footer';
+import API_CONFIG from '@/lib/config';
 import { CheckCircle2, Calendar, Clock, User } from 'lucide-react';
 
 interface ServiceType {
@@ -76,7 +77,9 @@ export default function CalendarioPage() {
 
     const loadServices = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/public/appointment-types');
+            const response = await fetch(
+                API_CONFIG.url(API_CONFIG.ENDPOINTS.APPOINTMENT_TYPES)
+            );
             if (response.ok) {
                 const result = await response.json();
                 if (result.success) {
@@ -92,7 +95,7 @@ export default function CalendarioPage() {
         setIsLoading(true);
         try {
             const response = await fetch(
-                `http://localhost:5000/api/public/available-slots?date=${formData.scheduledDate}&serviceType=${formData.type}`
+                API_CONFIG.url(`${API_CONFIG.ENDPOINTS.AVAILABLE_SLOTS}?date=${formData.scheduledDate}&serviceType=${formData.type}`)
             );
             if (response.ok) {
                 const result = await response.json();
@@ -129,11 +132,13 @@ export default function CalendarioPage() {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/public/appointments', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
+            const response = await fetch(
+                API_CONFIG.url(API_CONFIG.ENDPOINTS.PUBLIC_APPOINTMENTS),
+                API_CONFIG.fetchOptions({
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                })
+            );
 
             if (response.ok) {
                 setBookingComplete(true);
@@ -297,8 +302,8 @@ export default function CalendarioPage() {
                                                 key={index}
                                                 onClick={() => handleSlotSelect(slot)}
                                                 className={`px-4 py-2 rounded-lg font-medium transition-all ${formData.startTime === slot.start
-                                                        ? 'bg-sky-500 text-white'
-                                                        : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                                                    ? 'bg-sky-500 text-white'
+                                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
                                                     }`}
                                             >
                                                 {slot.start}
@@ -433,3 +438,4 @@ export default function CalendarioPage() {
         </>
     );
 }
+

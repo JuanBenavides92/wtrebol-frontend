@@ -2,7 +2,7 @@
  * Configuración de API para conectar con el backend WTREBOL
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 /**
  * Interfaz para respuestas de la API

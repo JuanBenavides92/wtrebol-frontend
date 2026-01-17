@@ -214,3 +214,4 @@ export default function Footer({ showFooter, isStatic = false }: FooterProps) {
         </footer>
     );
 }
+

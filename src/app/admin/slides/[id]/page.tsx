@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import API_CONFIG from '@/lib/config';
 import { ArrowLeft, Save, Loader2, Eye } from 'lucide-react';
 import ImageUpload from '@/components/admin/ImageUpload';
 import LayoutSelector, { LayoutType } from '@/components/admin/LayoutSelector';
@@ -78,9 +79,10 @@ export default function SlideFormPage() {
     const loadSlide = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/content/item/${slideId}`, {
-                credentials: 'include',
-            });
+            const response = await fetch(
+                API_CONFIG.url(`/api/content/item/${slideId}`),
+                API_CONFIG.fetchOptions()
+            );
 
             if (response.ok) {
                 const result = await response.json();
@@ -135,20 +137,19 @@ export default function SlideFormPage() {
 
         try {
             const url = isEdit
-                ? `http://localhost:5000/api/content/${slideId}`
-                : 'http://localhost:5000/api/content';
+                ? API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${slideId}`)
+                : API_CONFIG.url(API_CONFIG.ENDPOINTS.CONTENT);
 
-            const response = await fetch(url, {
-                method: isEdit ? 'PUT' : 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    type: 'slide',
-                    ...formData,
-                }),
-            });
+            const response = await fetch(
+                url,
+                API_CONFIG.fetchOptions({
+                    method: isEdit ? 'PUT' : 'POST',
+                    body: JSON.stringify({
+                        type: 'slide',
+                        ...formData,
+                    }),
+                })
+            );
 
             if (response.ok) {
                 router.push('/admin/slides');

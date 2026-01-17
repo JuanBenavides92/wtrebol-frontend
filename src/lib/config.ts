@@ -4,14 +4,13 @@
  */
 
 const getApiUrl = (): string => {
-    // In production, use environment variable
-    // In development, fallback to localhost
+    // Always use environment variable - no fallback
     if (typeof window !== 'undefined') {
         // Client-side
-        return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        return process.env.NEXT_PUBLIC_API_URL!;
     } else {
         // Server-side
-        return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        return process.env.NEXT_PUBLIC_API_URL!;
     }
 };
 

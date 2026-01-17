@@ -23,3 +23,4 @@ export default function NavigationDots({ currentSlide, totalSlides, onDotClick, 
     </div>
   );
 }
+
