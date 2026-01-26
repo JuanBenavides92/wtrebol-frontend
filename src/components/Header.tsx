@@ -2,13 +2,16 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, LogOut, Package } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useCustomerAuth } from '@/context/CustomerAuthContext';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { cartCount } = useCart();
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const { cartCount, openCart } = useCart();
+  const { customer, isAuthenticated, logout } = useCustomerAuth();
   const pathname = usePathname();
 
   const navItems = [
@@ -59,20 +62,102 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Right Section: Cart and Contact */}
-        <div className="flex items-center gap-6">
-          <Link href="/tienda" className="relative cursor-pointer group">
+        {/* Right Section: Cart, Customer Profile and Contact */}
+        <div className="flex items-center gap-4">
+          {/* Cart Button */}
+          <button onClick={() => openCart()} className="relative cursor-pointer group">
             <ShoppingCart className="h-6 w-6 text-gray-300 group-hover:text-sky-500 transition-colors" />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+              <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
                 {cartCount}
               </span>
             )}
-          </Link>
+          </button>
+
+          {/* Customer Profile Dropdown */}
+          <div className="relative hidden md:block">
+            <button
+              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+              className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all"
+            >
+              <User className="h-5 w-5 text-gray-300" />
+              {isAuthenticated && customer && (
+                <span className="text-sm text-white max-w-[100px] truncate">
+                  {customer.name.split(' ')[0]}
+                </span>
+              )}
+            </button>
+
+            {/* Dropdown Menu */}
+            {profileMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setProfileMenuOpen(false)}
+                />
+                <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-white/10 rounded-lg shadow-xl z-20 overflow-hidden">
+                  {isAuthenticated && customer ? (
+                    <>
+                      <div className="px-4 py-3 border-b border-white/10">
+                        <p className="text-sm text-gray-400">Hola,</p>
+                        <p className="font-semibold text-white truncate">{customer.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{customer.email}</p>
+                      </div>
+                      <Link
+                        href="/customer/dashboard"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                      >
+                        <Package className="h-5 w-5" />
+                        Mis Pedidos
+                      </Link>
+                      <Link
+                        href="/customer/dashboard/profile"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                      >
+                        <User className="h-5 w-5" />
+                        Mi Perfil
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout();
+                          setProfileMenuOpen(false);
+                        }}
+                        className="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 transition-colors w-full text-left"
+                      >
+                        <LogOut className="h-5 w-5" />
+                        Cerrar Sesión
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/customer/login"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                      >
+                        <User className="h-5 w-5" />
+                        Iniciar Sesión
+                      </Link>
+                      <Link
+                        href="/customer/register"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-sky-500 to-emerald-500 text-white hover:from-sky-400 hover:to-emerald-400 transition-colors"
+                      >
+                        <User className="h-5 w-5" />
+                        Registrarse
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
 
           <Link
             href="/contacto"
-            className="hidden md:block bg-white/10 hover:bg-sky-500 text-white border border-white/20 px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-[0_0_15px_rgba(14,165,233,0.5)]"
+            className="hidden lg:block bg-white/10 hover:bg-sky-500 text-white border border-white/20 px-5 py-2 rounded-full text-sm font-semibold transition-all hover:shadow-[0_0_15px_rgba(14,165,233,0.5)]"
           >
             Contáctanos
           </Link>

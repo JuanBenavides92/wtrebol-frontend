@@ -24,6 +24,7 @@ export default function ProductsPage() {
     const { isLoading, isAuthenticated } = useAuth();
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+    const [isGeneratingSlugs, setIsGeneratingSlugs] = useState(false);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -91,6 +92,37 @@ export default function ProductsPage() {
         }
     };
 
+    const generateSlugs = async () => {
+        if (!confirm('¿Generar slugs para todos los productos que no los tienen?\n\nEsto creará URLs amigables automáticamente.')) {
+            return;
+        }
+
+        setIsGeneratingSlugs(true);
+        try {
+            const response = await fetch(API_CONFIG.url('/api/content/generate-slugs'), {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    alert(`✅ Slugs generados exitosamente!\n\n` +
+                        `• Actualizados: ${result.data.updated}\n` +
+                        `• Saltados: ${result.data.skipped}\n` +
+                        `• Total procesados: ${result.data.total}\n\n` +
+                        `Ahora los productos tendrán URLs como:\n/tienda/nombre-del-producto`);
+                    loadProducts();
+                }
+            }
+        } catch (error) {
+            console.error('Error generating slugs:', error);
+            alert('❌ Error al generar slugs');
+        } finally {
+            setIsGeneratingSlugs(false);
+        }
+    };
+
     if (isLoading || !isAuthenticated) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -106,13 +138,32 @@ export default function ProductsPage() {
                     <h1 className="text-3xl font-bold text-white mb-2">Productos</h1>
                     <p className="text-gray-400">Gestiona el catálogo de productos</p>
                 </div>
-                <button
-                    onClick={() => router.push('/admin/productos/new')}
-                    className="flex items-center gap-2 px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors font-medium"
-                >
-                    <Plus className="h-5 w-5" />
-                    Nuevo Producto
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={generateSlugs}
+                        disabled={isGeneratingSlugs}
+                        className="flex items-center gap-2 px-4 py-3 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-500/30"
+                        title="Generar URLs amigables para productos sin slug"
+                    >
+                        {isGeneratingSlugs ? (
+                            <>
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                                Generando...
+                            </>
+                        ) : (
+                            <>
+                                🔗 Generar Slugs
+                            </>
+                        )}
+                    </button>
+                    <button
+                        onClick={() => router.push('/admin/productos/new')}
+                        className="flex items-center gap-2 px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors font-medium"
+                    >
+                        <Plus className="h-5 w-5" />
+                        Nuevo Producto
+                    </button>
+                </div>
             </div>
 
             {isLoadingProducts ? (

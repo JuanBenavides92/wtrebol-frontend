@@ -17,7 +17,10 @@ import {
     LogOut,
     Bell,
     Award,
-    HelpCircle
+    HelpCircle,
+    Package,
+    UserCog,
+    HardHat
 } from 'lucide-react';
 
 const navigation = [
@@ -41,6 +44,27 @@ const navigation = [
         icon: ShoppingBag,
         badge: null,
         gradient: 'from-emerald-400 to-teal-500'
+    },
+    {
+        name: 'Pedidos',
+        href: '/admin/pedidos',
+        icon: Package,
+        badge: null,
+        gradient: 'from-blue-400 to-cyan-500'
+    },
+    {
+        name: 'Clientes',
+        href: '/admin/clientes',
+        icon: Users,
+        badge: null,
+        gradient: 'from-violet-400 to-purple-500'
+    },
+    {
+        name: 'Usuarios',
+        href: '/admin/usuarios',
+        icon: UserCog,
+        badge: null,
+        gradient: 'from-rose-400 to-pink-500'
     },
     {
         name: 'Servicios',
@@ -73,7 +97,7 @@ const navigation = [
     {
         name: 'Técnicos',
         href: '/admin/tecnicos',
-        icon: Users,
+        icon: HardHat,
         badge: null,
         gradient: 'from-cyan-400 to-blue-500'
     },

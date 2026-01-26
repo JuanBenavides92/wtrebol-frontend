@@ -6,7 +6,9 @@
 import { cookies } from 'next/headers';
 import { Content } from '@/hooks/useContent';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+console.log('[Server Fetch] API_URL configured as:', API_URL);
 
 /**
  * Fetch content by type from the backend (Server-side)
@@ -25,8 +27,9 @@ export async function fetchContentByType(
         console.log(`[Server Fetch] Fetching ${type} from:`, url);
 
         const response = await fetch(url, {
-            // Revalidate every 60 seconds
-            next: { revalidate: 60 },
+            // Revalidate immediately (no cache for development)
+            // Change to 60 or higher for production
+            next: { revalidate: 0 },
             headers: {
                 'Content-Type': 'application/json',
             },

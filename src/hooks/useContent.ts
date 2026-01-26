@@ -17,6 +17,71 @@ export interface Content {
     buttonText?: string;
     buttonLink?: string;
     overlayOpacity?: number;
+    // Product-specific fields
+    category?: 'split' | 'cassette' | 'piso-cielo' | 'industrial' | 'accesorio';
+    btuCapacity?: number;
+    usageType?: 'residencial' | 'comercial' | 'industrial';
+    inStock?: boolean;
+    brand?: string;
+    // URLs & SEO
+    slug?: string;
+    metaTitle?: string;
+    metaDescription?: string;
+    metaKeywords?: string[];
+    // Identification
+    sku?: string;
+    condition?: 'nuevo' | 'usado';
+    // Stock & Availability
+    stockQuantity?: number;
+    lowStockThreshold?: number;
+    stockStatus?: 'in-stock' | 'low-stock' | 'out-of-stock' | 'pre-order';
+    // Gallery
+    images?: string[];
+    mainImageIndex?: number;
+    // Rich Content
+    longDescription?: string;
+    videoUrl?: string;
+    documents?: Array<{
+        name: string;
+        url: string;
+        type: 'manual' | 'datasheet' | 'warranty' | 'certificate';
+    }>;
+    // Specifications
+    specifications?: Record<string, string | number>;
+    // Features
+    features?: string[];
+    // Warranty
+    warranty?: {
+        duration: string;
+        type: string;
+        details?: string;
+    };
+    // Shipping
+    shipping?: {
+        freeShipping: boolean;
+        shippingCost?: string;
+        estimatedDays?: string;
+        availableRegions?: string[];
+    };
+    // Installation
+    installation?: {
+        required: boolean;
+        cost?: string;
+        estimatedHours?: string;
+    };
+    // Related Products
+    relatedProducts?: Content[] | string[];
+    accessories?: Content[] | string[];
+    // FAQs
+    faqs?: Array<{
+        question: string;
+        answer: string;
+    }>;
+    // Badges
+    badges?: Array<'nuevo' | 'oferta' | 'mas-vendido' | 'envio-gratis' | 'destacado'>;
+    // Analytics
+    views?: number;
+    lastViewed?: string;
     // Text styling
     titleSize?: number;
     titleColor?: string;

@@ -133,14 +133,14 @@ export default async function TiendaPage() {
     return (
         <>
             <PageLayout>
-                <div className="flex justify-between items-start mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
                         <h1 className="text-4xl font-bold text-sky-500 mb-2">Tienda WTREBOL</h1>
                         <p className="text-gray-400 text-lg">Equipos y accesorios de aire acondicionado de primera calidad</p>
                     </div>
                 </div>
 
-                {/* Client Component for cart functionality */}
+                {/* Client Component for filters, calculator, and cart functionality */}
                 <ProductListClient products={displayProducts} />
 
                 <div className="mt-16 p-8 bg-gradient-to-r from-sky-500/10 to-emerald-500/10 border border-sky-500/20 rounded-2xl text-center">

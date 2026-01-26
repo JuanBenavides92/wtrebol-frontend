@@ -4,13 +4,13 @@
  */
 
 const getApiUrl = (): string => {
-    // Always use environment variable - no fallback
+    // Environment variable with fallback
     if (typeof window !== 'undefined') {
         // Client-side
-        return process.env.NEXT_PUBLIC_API_URL!;
+        return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     } else {
         // Server-side
-        return process.env.NEXT_PUBLIC_API_URL!;
+        return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     }
 };
 
@@ -29,6 +29,28 @@ export const API_CONFIG = {
         SERVICES: '/api/content/service',
         ADVANTAGES: '/api/content/advantage',
         FAQ: '/api/content/faq',
+
+        // Customers (E-commerce)
+        CUSTOMER_REGISTER: '/api/customers/register',
+        CUSTOMER_LOGIN: '/api/customers/login',
+        CUSTOMER_LOGOUT: '/api/customers/logout',
+        CUSTOMER_ME: '/api/customers/me',
+
+        // Orders (E-commerce)
+        ORDERS: '/api/orders',
+        MY_ORDERS: '/api/orders/my-orders',
+
+        // Admin - Orders
+        ADMIN_ORDERS: '/api/admin/orders',
+        ADMIN_ORDERS_STATS: '/api/admin/orders/stats',
+
+        // Admin - Customers
+        ADMIN_CUSTOMERS: '/api/admin/customers',
+        ADMIN_CUSTOMERS_STATS: '/api/admin/customers/stats',
+
+        // Admin - Users
+        ADMIN_USERS: '/api/admin/users',
+        ADMIN_USERS_STATS: '/api/admin/users/stats',
 
         // Appointments
         APPOINTMENTS: '/api/appointments',
