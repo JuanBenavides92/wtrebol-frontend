@@ -32,18 +32,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Check authentication on mount
     useEffect(() => {
-        checkAuth();
+        // Solo verificar auth en rutas de admin
+        if (typeof window !== 'undefined') {
+            const isAdminRoute = window.location.pathname.startsWith('/admin');
+            if (isAdminRoute) {
+                checkAuth();
+            } else {
+                setIsLoading(false);
+            }
+        }
     }, []);
 
     const checkAuth = async () => {
         try {
-            // Check localStorage first
-            const storedUser = localStorage.getItem('admin_user');
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
+            const response = await fetch(`${API_URL}/api/auth/me`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.user) {
+                    setUser(data.user);
+                    localStorage.setItem('admin_user', JSON.stringify(data.user));
+                }
+            } else {
+                // No autenticado, limpiar
+                setUser(null);
+                localStorage.removeItem('admin_user');
             }
         } catch (error) {
             console.error('Auth check error:', error);
+            setUser(null);
+            localStorage.removeItem('admin_user');
         } finally {
             setIsLoading(false);
         }

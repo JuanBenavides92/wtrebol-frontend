@@ -44,7 +44,15 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
 
     // Check authentication on mount
     useEffect(() => {
-        checkAuth();
+        // Solo verificar auth en rutas de customer
+        if (typeof window !== 'undefined') {
+            const isCustomerRoute = window.location.pathname.startsWith('/customer');
+            if (isCustomerRoute) {
+                checkAuth();
+            } else {
+                setIsLoading(false);
+            }
+        }
     }, []);
 
     const checkAuth = async () => {

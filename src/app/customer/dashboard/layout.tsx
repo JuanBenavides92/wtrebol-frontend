@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCustomerAuth } from '@/context/CustomerAuthContext';
 import Link from 'next/link';
-import { Package, User, LogOut, Loader2 } from 'lucide-react';
+import { Package, User, LogOut, Loader2, Calendar } from 'lucide-react';
 
 export default function CustomerDashboardLayout({
     children,
@@ -42,6 +42,12 @@ export default function CustomerDashboardLayout({
             href: '/customer/dashboard',
             icon: Package,
             active: pathname === '/customer/dashboard' || pathname?.startsWith('/customer/dashboard/orders')
+        },
+        {
+            label: 'Mis Citas',
+            href: '/customer/dashboard/appointments',
+            icon: Calendar,
+            active: pathname?.startsWith('/customer/dashboard/appointments')
         },
         {
             label: 'Mi Perfil',
@@ -93,8 +99,8 @@ export default function CustomerDashboardLayout({
                                     key={item.href}
                                     href={item.href}
                                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${item.active
-                                            ? 'bg-gradient-to-r from-sky-500/20 to-emerald-500/20 text-white border border-sky-500/30'
-                                            : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                        ? 'bg-gradient-to-r from-sky-500/20 to-emerald-500/20 text-white border border-sky-500/30'
+                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                         }`}
                                 >
                                     <Icon className="h-5 w-5" />
@@ -124,8 +130,8 @@ export default function CustomerDashboardLayout({
                                     key={item.href}
                                     href={item.href}
                                     className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${item.active
-                                            ? 'text-sky-500'
-                                            : 'text-gray-400'
+                                        ? 'text-sky-500'
+                                        : 'text-gray-400'
                                         }`}
                                 >
                                     <Icon className="h-5 w-5" />

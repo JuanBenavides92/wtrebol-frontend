@@ -187,12 +187,6 @@ export default function Footer({ showFooter, isStatic = false }: FooterProps) {
                         <button className="text-gray-400 hover:text-sky-400 transition-colors">
                             Términos y Condiciones
                         </button>
-                        <Link
-                            href="/admin/login"
-                            className="text-gray-400 hover:text-sky-400 transition-colors font-medium"
-                        >
-                            Administrar
-                        </Link>
                     </div>
                 </div>
             </div>

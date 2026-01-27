@@ -40,6 +40,9 @@ export const API_CONFIG = {
         ORDERS: '/api/orders',
         MY_ORDERS: '/api/orders/my-orders',
 
+        // Customer Appointments
+        MY_APPOINTMENTS: '/api/customers/my-appointments',
+
         // Admin - Orders
         ADMIN_ORDERS: '/api/admin/orders',
         ADMIN_ORDERS_STATS: '/api/admin/orders/stats',
