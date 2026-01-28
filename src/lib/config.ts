@@ -39,6 +39,11 @@ export const API_CONFIG = {
         // Orders (E-commerce)
         ORDERS: '/api/orders',
         MY_ORDERS: '/api/orders/my-orders',
+        CREATE_ORDER: '/api/orders', // POST to /api/orders
+
+        // Wompi Payment Gateway
+        WOMPI_WEBHOOK: '/api/wompi/webhook',
+        WOMPI_TRANSACTION: '/api/wompi/transaction',
 
         // Customer Appointments
         MY_APPOINTMENTS: '/api/customers/my-appointments',

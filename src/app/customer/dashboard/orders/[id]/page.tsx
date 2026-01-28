@@ -7,6 +7,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import API_CONFIG from '@/lib/config';
 import { formatPrice } from '@/lib/whatsapp';
+import OrderProgressBar from '@/components/OrderProgressBar';
+import PaymentReceipt from '@/components/PaymentReceipt';
 
 interface OrderItem {
     productId: string;
@@ -151,6 +153,11 @@ export default function OrderDetailPage() {
                 </div>
             </div>
 
+            {/* Progress Bar */}
+            <div className="mb-6">
+                <OrderProgressBar currentStatus={order.status as any} />
+            </div>
+
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
@@ -254,6 +261,9 @@ export default function OrderDetailPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Payment Receipt */}
+                    <PaymentReceipt order={order as any} />
 
                     {/* Status History */}
                     {statusHistory.length > 0 && (

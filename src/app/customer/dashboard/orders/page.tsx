@@ -19,7 +19,7 @@ interface Order {
 type TabType = 'all' | 'pending' | 'paid';
 
 const statusConfig = {
-    pending_payment: { label: 'Pendiente de Pago', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', icon: Clock },
+    pending_payment: { label: 'Pendiente de Pago', color: 'bg-red-500/20 text-red-400 border-red-500/30', icon: Clock },
     payment_confirmed: { label: 'Pago Confirmado', color: 'bg-green-500/20 text-green-400 border-green-500/30', icon: CheckCircle },
     preparing: { label: 'En Preparación', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', icon: Package },
     shipped: { label: 'En Camino', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', icon: Truck },
@@ -74,6 +74,7 @@ export default function OrdersPage() {
             });
 
             if (response.ok) {
+                // Actualizar la lista de órdenes
                 fetchOrders();
             } else {
                 const data = await response.json();
@@ -93,8 +94,7 @@ export default function OrdersPage() {
         } else if (activeTab === 'paid') {
             return order.status !== 'pending_payment' && order.status !== 'cancelled';
         }
-        // Tab "Todos" - excluir pedidos cancelados
-        return order.status !== 'cancelled';
+        return true; // 'all'
     });
 
     const formatPrice = (amount: number) => {
@@ -111,11 +111,13 @@ export default function OrdersPage() {
 
     return (
         <div className="p-6">
+            {/* Header */}
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-white mb-2">Mis Pedidos</h1>
-                <p className="text-gray-400">Revisa el estado de tus pedidos</p>
+                <p className="text-gray-400">Gestiona y revisa el estado de tus pedidos</p>
             </div>
 
+            {/* Tabs */}
             <div className="flex gap-2 mb-6 border-b border-white/10">
                 <button
                     onClick={() => setActiveTab('all')}
@@ -124,7 +126,7 @@ export default function OrdersPage() {
                         : 'text-gray-400 hover:text-white'
                         }`}
                 >
-                    Todos ({orders.filter(o => o.status !== 'cancelled').length})
+                    Todos ({orders.length})
                 </button>
                 <button
                     onClick={() => setActiveTab('pending')}
@@ -133,7 +135,7 @@ export default function OrdersPage() {
                         : 'text-gray-400 hover:text-white'
                         }`}
                 >
-                    Pendiente ({orders.filter(o => o.status === 'pending_payment').length})
+                    Pendientes ({orders.filter(o => o.status === 'pending_payment').length})
                 </button>
                 <button
                     onClick={() => setActiveTab('paid')}
@@ -146,6 +148,7 @@ export default function OrdersPage() {
                 </button>
             </div>
 
+            {/* Orders List */}
             {loading ? (
                 <div className="text-center py-12">
                     <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -159,12 +162,6 @@ export default function OrdersPage() {
             ) : (
                 <div className="space-y-4">
                     {filteredOrders.map((order) => {
-                        // Validar que el estado existe en statusConfig
-                        if (!statusConfig[order.status]) {
-                            console.warn(`Estado desconocido: ${order.status} para pedido ${order.orderNumber}`);
-                            return null; // Saltar pedidos con estados no reconocidos
-                        }
-
                         const StatusIcon = statusConfig[order.status].icon;
                         const canCancel = order.status === 'pending_payment';
 
@@ -175,15 +172,17 @@ export default function OrdersPage() {
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
+                                        {/* Order Number & Date */}
                                         <div className="flex items-center gap-4 mb-3">
                                             <h3 className="text-xl font-bold text-white">
-                                                Pedido #{order.orderNumber}
+                                                {order.orderNumber}
                                             </h3>
                                             <span className="text-sm text-gray-400">
                                                 {formatDate(order.createdAt)}
                                             </span>
                                         </div>
 
+                                        {/* Status Badge */}
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${statusConfig[order.status].color}`}>
                                                 <StatusIcon className="w-4 h-4" />
@@ -199,6 +198,7 @@ export default function OrdersPage() {
                                             )}
                                         </div>
 
+                                        {/* Items Count & Total */}
                                         <div className="flex items-center gap-6 text-sm text-gray-400">
                                             <span>{order.items.length} producto{order.items.length !== 1 ? 's' : ''}</span>
                                             <span className="text-2xl font-bold text-white">
@@ -207,13 +207,14 @@ export default function OrdersPage() {
                                         </div>
                                     </div>
 
+                                    {/* Actions */}
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => router.push(`/customer/dashboard/orders/${order._id}`)}
                                             className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg border border-blue-500/30 transition-all"
                                         >
                                             <Eye className="w-4 h-4" />
-                                            Ver Detalle
+                                            Ver
                                         </button>
                                         {canCancel && (
                                             <button

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Package, Loader2, MapPin, Phone, Mail, User, Clock, Edit2, Check, X } from 'lucide-react';
+import { ArrowLeft, Package, Loader2, MapPin, Phone, Mail, User, Clock, Edit2, Check, X, CreditCard, ExternalLink, CheckCircle, Truck, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import API_CONFIG from '@/lib/config';
@@ -35,10 +35,19 @@ interface Order {
     subtotal: number;
     shipping: number;
     status: string;
+    paymentStatus?: string;
     createdAt: string;
+    paidAt?: string;
     items: OrderItem[];
     shippingInfo: ShippingInfo;
     notes?: string;
+    // Wompi payment data
+    wompiTransactionId?: string;
+    wompiPaymentMethod?: string;
+    wompiCardBrand?: string;
+    wompiCardLast4?: string;
+    wompiApprovalCode?: string;
+    wompiPaymentLink?: string;
 }
 
 interface StatusHistoryItem {
@@ -51,12 +60,11 @@ interface StatusHistoryItem {
 }
 
 const STATUS_OPTIONS = [
-    { value: 'pending', label: 'Pendiente', color: 'bg-yellow-500' },
-    { value: 'confirmed', label: 'Confirmado', color: 'bg-blue-500' },
-    { value: 'processing', label: 'En Proceso', color: 'bg-purple-500' },
-    { value: 'shipped', label: 'Enviado', color: 'bg-sky-500' },
-    { value: 'delivered', label: 'Entregado', color: 'bg-emerald-500' },
-    { value: 'cancelled', label: 'Cancelado', color: 'bg-red-500' }
+    { value: 'payment_confirmed', label: 'Pago Confirmado', color: 'bg-green-500', icon: CheckCircle },
+    { value: 'preparing', label: 'En Preparación', color: 'bg-blue-500', icon: Package },
+    { value: 'shipped', label: 'Enviado', color: 'bg-purple-500', icon: Truck },
+    { value: 'delivered', label: 'Entregado', color: 'bg-emerald-500', icon: CheckCircle },
+    { value: 'cancelled', label: 'Cancelado', color: 'bg-red-500', icon: XCircle }
 ];
 
 export default function AdminOrderDetailPage() {
@@ -199,33 +207,43 @@ export default function AdminOrderDetailPage() {
                     <div>
                         {!isEditingStatus ? (
                             <div className="flex items-center gap-3">
-                                <span className={`px-4 py-2 rounded-full text-white font-semibold ${currentStatusOption?.color || 'bg-gray-500'}`}>
+                                <span className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold border ${currentStatusOption?.color || 'bg-gray-500'} border-white/20`}>
+                                    {currentStatusOption?.icon && <currentStatusOption.icon className="h-4 w-4" />}
                                     {currentStatusOption?.label || order.status}
                                 </span>
                                 <button
                                     onClick={() => setIsEditingStatus(true)}
-                                    className="p-2 hover:bg-slate-800/30 rounded-lg transition-colors"
+                                    className="p-2 hover:bg-slate-800/30 rounded-lg transition-colors group"
+                                    title="Cambiar estado"
                                 >
-                                    <Edit2 className="h-5 w-5 text-gray-400 hover:text-white" />
+                                    <Edit2 className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
                                 </button>
                             </div>
                         ) : (
                             <div className="flex items-center gap-2">
-                                <select
-                                    value={newStatus}
-                                    onChange={(e) => setNewStatus(e.target.value)}
-                                    className="px-4 py-2 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-500/50"
-                                >
-                                    {STATUS_OPTIONS.map(option => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="relative">
+                                    <select
+                                        value={newStatus}
+                                        onChange={(e) => setNewStatus(e.target.value)}
+                                        className="appearance-none px-4 py-2.5 pr-10 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-500/50 transition-all cursor-pointer"
+                                    >
+                                        {STATUS_OPTIONS.map(option => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
                                 <button
                                     onClick={handleUpdateStatus}
-                                    disabled={isSaving}
-                                    className="p-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 rounded-lg transition-colors disabled:opacity-50 border border-emerald-500/30"
+                                    disabled={isSaving || newStatus === order.status}
+                                    className="p-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-500/30"
+                                    title="Guardar"
                                 >
                                     {isSaving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
                                 </button>
@@ -236,7 +254,8 @@ export default function AdminOrderDetailPage() {
                                         setStatusNotes('');
                                     }}
                                     disabled={isSaving}
-                                    className="p-2 bg-slate-700/50 hover:bg-slate-700 text-gray-300 rounded-lg transition-colors disabled:opacity-50"
+                                    className="p-2.5 bg-slate-700/50 hover:bg-slate-700 text-gray-300 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Cancelar"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
@@ -377,6 +396,84 @@ export default function AdminOrderDetailPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Payment Receipt */}
+                    {order.paymentStatus === 'approved' && order.wompiTransactionId && (
+                        <div className="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+                            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                <CreditCard className="h-5 w-5" />
+                                Comprobante de Pago
+                            </h2>
+                            <div className="space-y-3">
+                                {/* Payment Status */}
+                                <div className="flex items-center gap-2 px-3 py-2 bg-green-500/20 border border-green-500/30 rounded-lg">
+                                    <CheckCircle className="h-4 w-4 text-green-400" />
+                                    <span className="text-sm font-semibold text-green-400">Pago Aprobado</span>
+                                </div>
+
+                                {/* Transaction ID */}
+                                <div>
+                                    <p className="text-xs text-gray-400 mb-1">ID de Transacción</p>
+                                    <p className="text-sm font-mono text-white break-all">{order.wompiTransactionId}</p>
+                                </div>
+
+                                {/* Payment Method */}
+                                {order.wompiPaymentMethod && (
+                                    <div>
+                                        <p className="text-xs text-gray-400 mb-1">Método de Pago</p>
+                                        <p className="text-sm text-white capitalize">{order.wompiPaymentMethod}</p>
+                                    </div>
+                                )}
+
+                                {/* Card Info */}
+                                {order.wompiCardBrand && order.wompiCardLast4 && (
+                                    <div>
+                                        <p className="text-xs text-gray-400 mb-1">Tarjeta</p>
+                                        <p className="text-sm text-white">
+                                            {order.wompiCardBrand} •••• {order.wompiCardLast4}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Approval Code */}
+                                {order.wompiApprovalCode && (
+                                    <div>
+                                        <p className="text-xs text-gray-400 mb-1">Código de Aprobación</p>
+                                        <p className="text-sm font-mono text-white">{order.wompiApprovalCode}</p>
+                                    </div>
+                                )}
+
+                                {/* Payment Date */}
+                                {order.paidAt && (
+                                    <div>
+                                        <p className="text-xs text-gray-400 mb-1">Fecha de Pago</p>
+                                        <p className="text-sm text-white">
+                                            {new Date(order.paidAt).toLocaleString('es-ES', {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Link to Wompi Receipt */}
+                                {order.wompiPaymentLink && (
+                                    <a
+                                        href={order.wompiPaymentLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg border border-blue-500/30 transition-all text-sm font-medium"
+                                    >
+                                        <ExternalLink className="h-4 w-4" />
+                                        Ver Recibo Oficial
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Status History */}
                     {statusHistory.length > 0 && (

@@ -39,10 +39,9 @@ interface Stats {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-    pending: { label: 'Pendiente', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-    confirmed: { label: 'Confirmado', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-    processing: { label: 'En Proceso', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-    shipped: { label: 'Enviado', color: 'bg-sky-500/20 text-sky-400 border-sky-500/30' },
+    payment_confirmed: { label: 'Pago Confirmado', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
+    preparing: { label: 'En Preparación', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+    shipped: { label: 'Enviado', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
     delivered: { label: 'Entregado', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
     cancelled: { label: 'Cancelado', color: 'bg-red-500/20 text-red-400 border-red-500/30' }
 };
@@ -73,7 +72,11 @@ export default function AdminOrdersPage() {
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
-                    setOrders(data.orders);
+                    // Filtrar pedidos pendientes de pago
+                    const paidOrders = data.orders.filter((order: Order) =>
+                        order.status !== 'pending_payment'
+                    );
+                    setOrders(paidOrders);
                 }
             }
         } catch (error) {

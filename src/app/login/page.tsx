@@ -49,8 +49,18 @@ export default function UnifiedLoginPage() {
             if (data.success) {
                 console.log('✅ Login successful! Redirecting to:', data.redirectTo);
 
-                // Usar window.location para ambos tipos para asegurar que la sesión se cargue
-                window.location.href = data.redirectTo;
+                // Verificar si hay una ruta de retorno guardada
+                const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+
+                if (redirectPath) {
+                    // Limpiar el sessionStorage
+                    sessionStorage.removeItem('redirectAfterLogin');
+                    // Redirigir a la ruta guardada
+                    window.location.href = redirectPath;
+                } else {
+                    // Usar la redirección por defecto del backend
+                    window.location.href = data.redirectTo;
+                }
             } else {
                 console.log('❌ Login failed:', data.message);
                 setError(data.message || 'Credenciales inválidas');

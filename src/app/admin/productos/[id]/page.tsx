@@ -58,6 +58,7 @@ interface ExtendedProductFormData {
         shippingCost: string;
         estimatedDays: string;
     };
+    estimatedDeliveryDays: number; // Días numéricos para cálculos
 
     // Estado
     isActive: boolean;
@@ -142,6 +143,7 @@ export default function ProductFormPage() {
             shippingCost: '',
             estimatedDays: '',
         },
+        estimatedDeliveryDays: 0,
         isActive: true,
         inStock: true,
         stockStatus: 'in-stock',
@@ -210,6 +212,7 @@ export default function ProductFormPage() {
                     badges: data.badges || [],
                     warranty: data.warranty || { duration: '', type: '', details: '' },
                     shipping: data.shipping || { freeShipping: false, shippingCost: '', estimatedDays: '' },
+                    estimatedDeliveryDays: data.estimatedDeliveryDays || 0,
                     isActive: data.isActive ?? true,
                     inStock: data.inStock ?? true,
                     stockStatus: data.stockStatus || 'in-stock',
@@ -713,6 +716,25 @@ export default function ProductFormPage() {
                                                     className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
                                                     placeholder="Ej: 3-5 días hábiles"
                                                 />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-400 mb-2">Días Estimados (Número)</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="365"
+                                                    value={formData.estimatedDeliveryDays || ''}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        estimatedDeliveryDays: Number(e.target.value)
+                                                    }))}
+                                                    className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                                                    placeholder="Ej: 5"
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Usado para calcular la fecha estimada de entrega
+                                                </p>
                                             </div>
                                         </div>
                                     </div>

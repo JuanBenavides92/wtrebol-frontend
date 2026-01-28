@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Wompi Widget</title>
+</head>
+
+<body>
+    <h1>Test Wompi Widget - Sandbox</h1>
+
+    <button id="payButton">Pagar con Wompi</button>
+
+    <script src="https://checkout.wompi.co/widget.js"></script>
+    <script>
+        document.getElementById('payButton').addEventListener('click', function () {
+            console.log('Opening Wompi widget...');
+
+            var checkout = new WidgetCheckout({
+                currency: 'COP',
+                amountInCents: 5000000, // $50,000 COP
+                reference: 'TEST-' + Date.now(),
+                publicKey: 'pub_test_mZwqsVoRlKr1VtkrAQpGnuDuCtCSTBNv',
+                signature: {
+                    integrity: '6dc9f1f033044a780de5571fe3c4d75e8c5d8e9c8f7e6d5c4b3a2918273645'
+                }
+            });
+
+            checkout.open(function (result) {
+                console.log('Payment result:', result);
+                alert('Transaction ID: ' + result.transaction.id);
+            });
+        });
+    </script>
+</body>
+
+</html>

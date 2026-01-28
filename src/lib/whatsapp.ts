@@ -50,7 +50,10 @@ export function parsePriceToNumber(priceString: string): number {
 /**
  * Format number to Colombian currency
  */
-export function formatPrice(amount: number): string {
+export function formatPrice(amount: number | undefined | null): string {
+    if (amount === undefined || amount === null || isNaN(amount)) {
+        return '$0';
+    }
     return `$${amount.toLocaleString('es-CO')}`;
 }
 

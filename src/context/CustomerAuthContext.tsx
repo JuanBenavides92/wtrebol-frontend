@@ -44,10 +44,12 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
 
     // Check authentication on mount
     useEffect(() => {
-        // Solo verificar auth en rutas de customer
+        // Verificar auth en rutas de customer y checkout
         if (typeof window !== 'undefined') {
             const isCustomerRoute = window.location.pathname.startsWith('/customer');
-            if (isCustomerRoute) {
+            const isCheckoutRoute = window.location.pathname.startsWith('/checkout');
+
+            if (isCustomerRoute || isCheckoutRoute) {
                 checkAuth();
             } else {
                 setIsLoading(false);
