@@ -289,23 +289,16 @@ export default function ProductFormPage() {
 
             console.log('🚀 Enviando payload:', JSON.stringify(payload, null, 2));
 
-            const url = isEdit
-                ? API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${productId}`)
-                : API_CONFIG.url(API_CONFIG.ENDPOINTS.CONTENT);
+            // ✨ USE SERVER ACTION instead of direct fetch
+            const { saveProductAction } = await import('../actions');
+            const result = await saveProductAction(payload, productId, isEdit);
 
-            const response = await fetch(url, {
-                method: isEdit ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(payload),
-            });
-
-            if (response.ok) {
+            if (result.success) {
+                console.log('✅ Producto guardado y caché revalidado');
                 router.push('/admin/productos');
             } else {
-                const data = await response.json();
-                console.error('❌ Error del backend:', data);
-                setError(data.message || 'Error al guardar el producto');
+                console.error('❌ Error al guardar:', result.error);
+                setError(result.error || 'Error al guardar el producto');
             }
         } catch (error) {
             console.error('Error saving product:', error);

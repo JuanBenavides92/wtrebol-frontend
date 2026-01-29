@@ -109,8 +109,14 @@ export const useProductOptions = (
             if (response.ok) {
                 const result = await response.json();
                 if (result.success && result.data) {
-                    // Refresh options list
-                    await loadOptions();
+                    // ✨ OPTIMISTIC UPDATE: Add to local state immediately
+                    setOptions(prev => [...prev, result.data]);
+
+                    // Refresh in background to ensure sync with backend
+                    loadOptions().catch(err => {
+                        console.error('Background refresh failed:', err);
+                    });
+
                     return result.data;
                 }
             } else {
