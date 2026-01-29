@@ -45,6 +45,9 @@ export const API_CONFIG = {
         WOMPI_WEBHOOK: '/api/wompi/webhook',
         WOMPI_TRANSACTION: '/api/wompi/transaction',
 
+        // Product Options
+        PRODUCT_OPTIONS: '/api/product-options',
+
         // Customer Appointments
         MY_APPOINTMENTS: '/api/customers/my-appointments',
 

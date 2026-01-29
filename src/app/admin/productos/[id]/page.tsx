@@ -15,6 +15,9 @@ import SpecificationsTable from '@/components/admin/SpecificationsTable';
 import FeaturesList from '@/components/admin/FeaturesList';
 import FAQManager from '@/components/admin/FAQManager';
 import BadgesToggle from '@/components/admin/BadgesToggle';
+import PriceInput from '@/components/admin/PriceInput';
+import CreatableSelect from '@/components/admin/CreatableSelect';
+import { useProductOptions } from '@/hooks/useProductOptions';
 import API_CONFIG from '@/lib/config';
 import slugify from 'slugify';
 
@@ -154,6 +157,11 @@ export default function ProductFormPage() {
     const [error, setError] = useState<string | null>(null);
     const [hasLoadedProduct, setHasLoadedProduct] = useState(false);
 
+    // Product options hooks
+    const categoryOptions = useProductOptions('category');
+    const btuOptions = useProductOptions('btu');
+    const conditionOptions = useProductOptions('condition');
+
     useEffect(() => {
         if (!isAuthenticated) {
             router.push('/admin/login');
@@ -257,6 +265,11 @@ export default function ProductFormPage() {
                 ...formData,
                 imageUrl: mainImage, // Backward compatibility
             };
+
+            // Clean estimatedDeliveryDays if not specified
+            if (!payload.estimatedDeliveryDays || payload.estimatedDeliveryDays === 0) {
+                delete payload.estimatedDeliveryDays;
+            }
 
             // Clean empty nested objects to prevent cast errors
             if (payload.warranty &&
@@ -404,30 +417,24 @@ export default function ProductFormPage() {
                                             </p>
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-white mb-2">Precio</label>
-                                            <input
-                                                type="text"
-                                                value={formData.price}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                                                className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                                                placeholder="Ej: $2.500.000"
-                                            />
-                                        </div>
+                                        <PriceInput
+                                            value={formData.price}
+                                            onChange={(value) => setFormData(prev => ({ ...prev, price: value }))}
+                                            label="Precio"
+                                            placeholder="Ej: $2.500.000"
+                                        />
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-white mb-2">Categoría</label>
-                                            <select
-                                                value={formData.category}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                                                className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                                            >
-                                                <option value="">Seleccionar categoría...</option>
-                                                {CATEGORIES.map(cat => (
-                                                    <option key={cat.value} value={cat.value}>{cat.label}</option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                        <CreatableSelect
+                                            value={formData.category}
+                                            onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                                            options={categoryOptions.options.map(opt => ({ value: opt.value, label: opt.label }))}
+                                            onCreateOption={async (label) => {
+                                                return await categoryOptions.createOption(label);
+                                            }}
+                                            label="Categoría"
+                                            placeholder="Seleccionar categoría..."
+                                            isLoading={categoryOptions.isLoading}
+                                        />
 
                                         <div>
                                             <label className="block text-sm font-medium text-white mb-2">Marca</label>
@@ -451,31 +458,29 @@ export default function ProductFormPage() {
                                             />
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-white mb-2">Capacidad (BTU)</label>
-                                            <select
-                                                value={formData.btuCapacity}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, btuCapacity: Number(e.target.value) }))}
-                                                className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                                            >
-                                                <option value={0}>N/A</option>
-                                                {BTU_OPTIONS.map(btu => (
-                                                    <option key={btu} value={btu}>{btu.toLocaleString()} BTU</option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                        <CreatableSelect
+                                            value={String(formData.btuCapacity || '')}
+                                            onChange={(value) => setFormData(prev => ({ ...prev, btuCapacity: Number(value) || 0 }))}
+                                            options={btuOptions.options.map(opt => ({ value: opt.value, label: opt.label }))}
+                                            onCreateOption={async (label) => {
+                                                return await btuOptions.createOption(label);
+                                            }}
+                                            label="Capacidad (BTU)"
+                                            placeholder="Seleccionar capacidad..."
+                                            isLoading={btuOptions.isLoading}
+                                        />
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-white mb-2">Condición</label>
-                                            <select
-                                                value={formData.condition}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, condition: e.target.value as 'nuevo' | 'usado' }))}
-                                                className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                                            >
-                                                <option value="nuevo">Nuevo</option>
-                                                <option value="usado">Usado</option>
-                                            </select>
-                                        </div>
+                                        <CreatableSelect
+                                            value={formData.condition}
+                                            onChange={(value) => setFormData(prev => ({ ...prev, condition: value as 'nuevo' | 'usado' }))}
+                                            options={conditionOptions.options.map(opt => ({ value: opt.value, label: opt.label }))}
+                                            onCreateOption={async (label) => {
+                                                return await conditionOptions.createOption(label);
+                                            }}
+                                            label="Condición"
+                                            placeholder="Seleccionar condición..."
+                                            isLoading={conditionOptions.isLoading}
+                                        />
 
                                         <div className="md:col-span-2">
                                             <label className="block text-sm font-medium text-white mb-2">

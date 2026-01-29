@@ -14,6 +14,7 @@ interface Service {
     icon: string;
     color: string;
     gradient: string;
+    imageUrl?: string;
     buttonText?: string;
     buttonLink?: string;
 }
@@ -55,20 +56,35 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
                     <div
                         className="relative h-96 lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl"
                         style={{
-                            background: service.gradient,
+                            background: service.imageUrl ? 'transparent' : service.gradient,
                         }}
                     >
-                        {/* Glassmorphism overlay */}
-                        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
+                        {service.imageUrl ? (
+                            <>
+                                {/* Real Image */}
+                                <img
+                                    src={service.imageUrl}
+                                    alt={service.title}
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                />
+                                {/* Glassmorphism overlay on image */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                            </>
+                        ) : (
+                            <>
+                                {/* Fallback: Glassmorphism overlay */}
+                                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
 
-                        {/* Icon/Placeholder */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-9xl opacity-20">{service.icon}</div>
-                        </div>
+                                {/* Icon/Placeholder */}
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-9xl opacity-20">{service.icon}</div>
+                                </div>
 
-                        {/* Decorative elements */}
-                        <div className="absolute top-10 right-10 w-32 h-32 bg-white/20 rounded-full blur-3xl" />
-                        <div className="absolute bottom-10 left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl" />
+                                {/* Decorative elements */}
+                                <div className="absolute top-10 right-10 w-32 h-32 bg-white/20 rounded-full blur-3xl" />
+                                <div className="absolute bottom-10 left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl" />
+                            </>
+                        )}
                     </div>
                 </motion.div>
 
@@ -165,6 +181,7 @@ export default function ServiciosSection3D() {
                             icon: s.data?.icon || '🔧',
                             color: s.data?.color || '#0EA5E9',
                             gradient: s.data?.gradient || 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)',
+                            imageUrl: s.imageUrl || null,
                             buttonText: s.data?.buttonText || 'Solicitar Servicio',
                             buttonLink: s.data?.buttonLink || '/contacto',
                         }));
