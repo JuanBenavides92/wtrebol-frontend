@@ -5,6 +5,7 @@ import FilterBar from '@/components/tienda/FilterBar';
 import { useCart, CartProduct } from '@/context/CartContext';
 import { Content } from '@/hooks/useContent';
 import { useProductFilters } from '@/hooks/useProductFilters';
+import { useStoreFilters } from '@/hooks/useStoreFilters';
 
 interface ProductListClientProps {
     products: Content[];
@@ -12,6 +13,9 @@ interface ProductListClientProps {
 
 export default function ProductListClient({ products }: ProductListClientProps) {
     const { addToCart } = useCart();
+
+    // Get filter options from ProductOptions API (shows ALL options, not just used ones)
+    const storeFilters = useStoreFilters(products);
 
     const {
         filters,
@@ -41,8 +45,10 @@ export default function ProductListClient({ products }: ProductListClientProps) 
             {/* Filter Bar */}
             <FilterBar
                 filters={filters}
-                availableCategories={availableFilters.categories}
-                availableBTUs={availableFilters.btuCapacities}
+                availableCategories={storeFilters.categories}
+                availableBTUs={storeFilters.btuCapacities}
+                availableConditions={storeFilters.conditions}
+                isLoadingFilters={storeFilters.isLoading}
                 onSearchChange={(search) => updateFilter('search', search)}
                 onToggleCategory={toggleCategory}
                 onToggleBTU={toggleBTU}

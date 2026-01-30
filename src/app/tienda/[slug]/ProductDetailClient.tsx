@@ -7,6 +7,7 @@ import { ShoppingCart, Share2, Home, ChevronRight, ArrowLeft } from 'lucide-reac
 import Link from 'next/link';
 import Image from 'next/image';
 import { getCategoryLabel, generateWhatsAppLink, parsePriceToNumber } from '@/lib/whatsapp';
+import { formatPrice } from '@/lib/formatters';
 
 interface ProductDetailClientProps {
     product: Content;
@@ -185,7 +186,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
                     {/* Price */}
                     <div className="py-4 border-y border-white/10">
-                        <div className="text-4xl font-bold text-emerald-500">{product.price || 'Consultar'}</div>
+                        <div className="text-4xl font-bold text-emerald-500">{formatPrice(product.price) || 'Consultar'}</div>
                         {product.condition && (
                             <div className="text-sm text-gray-400 mt-1">
                                 Estado: <span className="text-white">{product.condition === 'nuevo' ? 'Nuevo' : 'Usado'}</span>

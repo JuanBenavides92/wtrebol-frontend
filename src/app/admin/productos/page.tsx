@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, ShoppingBag } from 'lucide-react';
 import API_CONFIG from '@/lib/config';
+import { formatPrice } from '@/lib/formatters';
+import DeleteProductModal from '@/components/admin/DeleteProductModal';
 
 interface Product {
     _id: string;
@@ -25,6 +27,10 @@ export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [isGeneratingSlugs, setIsGeneratingSlugs] = useState(false);
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; product: Product | null }>({
+        isOpen: false,
+        product: null
+    });
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -77,23 +83,30 @@ export default function ProductsPage() {
         }
     };
 
-    const deleteProduct = async (id: string) => {
-        if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+    const handleDeleteClick = (product: Product) => {
+        setDeleteModal({ isOpen: true, product });
+    };
+
+    const deleteProduct = async () => {
+        if (!deleteModal.product) return;
 
         try {
-            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}`), {
+            const response = await fetch(API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${deleteModal.product._id}`), {
                 method: 'DELETE',
                 credentials: 'include',
             });
 
-            if (response.ok) loadProducts();
+            if (response.ok) {
+                loadProducts();
+                setDeleteModal({ isOpen: false, product: null });
+            }
         } catch (error) {
             console.error('Error deleting product:', error);
         }
     };
 
     const generateSlugs = async () => {
-        if (!confirm('¿Generar slugs para todos los productos que no los tienen?\n\nEsto creará URLs amigables automáticamente.')) {
+        if (!confirm('¿Generar slugs para todos los productos que no los tienen?\\n\\nEsto creará URLs amigables automáticamente.')) {
             return;
         }
 
@@ -107,11 +120,11 @@ export default function ProductsPage() {
             if (response.ok) {
                 const result = await response.json();
                 if (result.success) {
-                    alert(`✅ Slugs generados exitosamente!\n\n` +
-                        `• Actualizados: ${result.data.updated}\n` +
-                        `• Saltados: ${result.data.skipped}\n` +
-                        `• Total procesados: ${result.data.total}\n\n` +
-                        `Ahora los productos tendrán URLs como:\n/tienda/nombre-del-producto`);
+                    alert(`✅ Slugs generados exitosamente!\\n\\n` +
+                        `• Actualizados: ${result.data.updated}\\n` +
+                        `• Saltados: ${result.data.skipped}\\n` +
+                        `• Total procesados: ${result.data.total}\\n\\n` +
+                        `Ahora los productos tendrán URLs como:\\n/tienda/nombre-del-producto`);
                     loadProducts();
                 }
             }
@@ -199,8 +212,17 @@ export default function ProductsPage() {
                             {products.map((product) => (
                                 <tr key={product._id} className="hover:bg-slate-800/30 transition-colors">
                                     <td className="px-6 py-4">
-                                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-700">
-                                            <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover" />
+                                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-700 flex items-center justify-center">
+                                            <img
+                                                src={product.imageUrl}
+                                                alt={product.title}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = 'https://images.unsplash.com/photo-1632823471565-1ecdf5c6da46?q=80&w=200';
+                                                    target.onerror = null; // Prevent infinite loop
+                                                }}
+                                            />
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
@@ -215,7 +237,7 @@ export default function ProductsPage() {
                                         </p>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <p className="text-emerald-400 font-semibold">{product.price || '-'}</p>
+                                        <p className="text-emerald-400 font-semibold">{formatPrice(product.price)}</p>
                                     </td>
                                     <td className="px-6 py-4">
                                         <button
@@ -238,7 +260,7 @@ export default function ProductsPage() {
                                                 <Edit className="h-4 w-4" />
                                             </button>
                                             <button
-                                                onClick={() => deleteProduct(product._id)}
+                                                onClick={() => handleDeleteClick(product)}
                                                 className="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
                                                 title="Eliminar"
                                             >
@@ -261,6 +283,14 @@ export default function ProductsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Delete Confirmation Modal */}
+            <DeleteProductModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, product: null })}
+                onConfirm={deleteProduct}
+                productName={deleteModal.product?.title || ''}
+            />
         </div>
     );
 }

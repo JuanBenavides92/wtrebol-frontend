@@ -10,6 +10,7 @@ interface CreateOptionModalProps {
     onConfirm: (label: string) => Promise<void>;
     title: string;
     placeholder?: string;
+    externalError?: string | null; // Error from parent component (e.g., validation)
 }
 
 export default function CreateOptionModal({
@@ -18,6 +19,7 @@ export default function CreateOptionModal({
     onConfirm,
     title,
     placeholder = 'Nombre de la nueva opción',
+    externalError = null,
 }: CreateOptionModalProps) {
     const [label, setLabel] = useState('');
     const [isCreating, setIsCreating] = useState(false);
@@ -99,8 +101,10 @@ export default function CreateOptionModal({
                             autoFocus
                             disabled={isCreating}
                         />
-                        {error && (
-                            <p className="text-sm text-red-400 mt-2">{error}</p>
+                        {(error || externalError) && (
+                            <div className="mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                                <p className="text-sm text-red-400">{error || externalError}</p>
+                            </div>
                         )}
                     </div>
 

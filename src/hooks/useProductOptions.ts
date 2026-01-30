@@ -18,6 +18,7 @@ interface UseProductOptionsReturn {
     error: string | null;
     createOption: (label: string) => Promise<ProductOption | null>;
     refresh: () => Promise<void>;
+    refreshOptions: () => Promise<void>; // Alias for refresh
 }
 
 export const useProductOptions = (
@@ -86,15 +87,36 @@ export const useProductOptions = (
 
     const createOption = async (label: string): Promise<ProductOption | null> => {
         try {
-            // Generate value from label (lowercase, replace spaces with hyphens)
-            const value = label
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '') // Remove accents
-                .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
-                .replace(/\s+/g, '-') // Replace spaces with hyphens
-                .replace(/-+/g, '-') // Remove duplicate hyphens
-                .trim();
+            console.log(`🆕 [createOption] Creando nueva opción: "${label}" (tipo: ${type})`);
+
+            // Generate value based on type
+            let value: string;
+
+            if (type === 'btu') {
+                // Para BTU, extraer el número del label
+                // "12000 BTU" → "12000"
+                // "800000 BTU" → "800000"
+                const numberMatch = label.match(/\d+/);
+                if (numberMatch) {
+                    value = numberMatch[0];
+                    console.log(`🔢 [createOption BTU] Número extraído del label: "${value}"`);
+                } else {
+                    console.error(`❌ [createOption BTU] No se encontró número en el label: "${label}"`);
+                    setError('El BTU debe contener un valor numérico (ej: 12000 BTU)');
+                    return null;
+                }
+            } else {
+                // Para category y condition, usar slug normal
+                value = label
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+                    .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
+                    .replace(/\s+/g, '-') // Replace spaces with hyphens
+                    .replace(/-+/g, '-') // Remove duplicate hyphens
+                    .trim();
+                console.log(`📝 [createOption] Slug generado: "${value}"`);
+            }
 
             const response = await fetch(
                 API_CONFIG.url(API_CONFIG.ENDPOINTS.PRODUCT_OPTIONS),
@@ -108,23 +130,47 @@ export const useProductOptions = (
 
             if (response.ok) {
                 const result = await response.json();
+                console.log(`✅ [createOption] Respuesta del backend:`, result);
+
                 if (result.success && result.data) {
                     // ✨ OPTIMISTIC UPDATE: Add to local state immediately
-                    setOptions(prev => [...prev, result.data]);
-
-                    // Refresh in background to ensure sync with backend
-                    loadOptions().catch(err => {
-                        console.error('Background refresh failed:', err);
+                    setOptions(prev => {
+                        console.log(`📋 [createOption] Agregando a opciones locales. Total antes: ${prev.length}`);
+                        const newOptions = [...prev, result.data];
+                        console.log(`📋 [createOption] Total después: ${newOptions.length}`);
+                        return newOptions;
                     });
 
+                    // ❌ NO hacer refresh en background - causa race condition
+                    // La opción ya está agregada con optimistic update
+
+                    console.log(`✅ [createOption] Opción creada y agregada exitosamente`);
                     return result.data;
                 }
             } else {
                 const result = await response.json();
+
+                // If it's a duplicate error (409), throw with details (not an error, expected behavior)
+                if (response.status === 409 && result.duplicate) {
+                    console.warn(`⚠️ [createOption] Opción duplicada detectada: "${result.existing?.label}"`);
+                    throw {
+                        isDuplicate: true,
+                        existing: result.existing,
+                        message: result.message
+                    };
+                }
+
+                // Log other errors
+                console.error(`❌ [createOption] Error del servidor:`, result);
                 setError(result.message || 'Error al crear opción');
             }
-        } catch (err) {
-            console.error('Error creating option:', err);
+        } catch (err: any) {
+            // Re-throw duplicate errors for UI handling
+            if (err.isDuplicate) {
+                throw err;
+            }
+
+            console.error('❌ [createOption] Error:', err);
             setError('Error al crear opción');
         }
         return null;
@@ -136,5 +182,6 @@ export const useProductOptions = (
         error,
         createOption,
         refresh: loadOptions,
+        refreshOptions: loadOptions, // Alias for clarity
     };
 };

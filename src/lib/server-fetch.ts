@@ -27,9 +27,9 @@ export async function fetchContentByType(
         console.log(`[Server Fetch] Fetching ${type} from:`, url);
 
         const response = await fetch(url, {
-            // Revalidate immediately (no cache for development)
-            // Change to 60 or higher for production
-            next: { revalidate: 0 },
+            // ✨ CRITICAL FIX: Use 'no-store' instead of revalidate
+            // This completely disables caching to ensure fresh data
+            cache: 'no-store',
             headers: {
                 'Content-Type': 'application/json',
             },

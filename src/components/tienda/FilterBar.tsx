@@ -4,10 +4,19 @@ import { Search, X, Filter } from 'lucide-react';
 import { getCategoryLabel } from '@/lib/whatsapp';
 import { FilterState } from '@/hooks/useProductFilters';
 
+interface FilterOption {
+    value: string | number;
+    label: string;
+    count: number;
+    _id: string;
+}
+
 interface FilterBarProps {
     filters: FilterState;
-    availableCategories: string[];
-    availableBTUs: number[];
+    availableCategories: FilterOption[];
+    availableBTUs: FilterOption[];
+    availableConditions?: FilterOption[];
+    isLoadingFilters?: boolean;
     onSearchChange: (search: string) => void;
     onToggleCategory: (category: string) => void;
     onToggleBTU: (btu: number) => void;
@@ -20,6 +29,8 @@ export default function FilterBar({
     filters,
     availableCategories,
     availableBTUs,
+    availableConditions,
+    isLoadingFilters = false,
     onSearchChange,
     onToggleCategory,
     onToggleBTU,
@@ -63,22 +74,27 @@ export default function FilterBar({
             {/* Filter Buttons Row */}
             <div className="flex flex-wrap gap-3">
                 {/* Category Filters */}
-                {availableCategories.length > 0 && (
-                    <div className="flex items-center gap-2">
+                {isLoadingFilters ? (
+                    <div className="text-sm text-gray-400">Cargando filtros...</div>
+                ) : availableCategories.length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap">
                         <Filter className="h-4 w-4 text-gray-400" />
                         <span className="text-sm text-gray-400">Categoría:</span>
-                        {availableCategories.map((category) => {
-                            const isActive = filters.categories.includes(category);
+                        {availableCategories.map((option) => {
+                            const isActive = filters.categories.includes(option.value as string);
                             return (
                                 <button
-                                    key={category}
-                                    onClick={() => onToggleCategory(category)}
-                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${isActive
-                                            ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30'
-                                            : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
+                                    key={option._id}
+                                    onClick={() => onToggleCategory(option.value as string)}
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${isActive
+                                        ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30'
+                                        : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
                                         }`}
                                 >
-                                    {getCategoryLabel(category)}
+                                    {option.label}
+                                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20' : 'bg-white/10'}`}>
+                                        {option.count}
+                                    </span>
                                 </button>
                             );
                         })}
@@ -86,21 +102,24 @@ export default function FilterBar({
                 )}
 
                 {/* BTU Filters */}
-                {availableBTUs.length > 0 && (
+                {!isLoadingFilters && availableBTUs.length > 0 && (
                     <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm text-gray-400">BTU:</span>
-                        {availableBTUs.map((btu) => {
-                            const isActive = filters.btuRanges.includes(btu);
+                        {availableBTUs.map((option) => {
+                            const isActive = filters.btuRanges.includes(option.value as number);
                             return (
                                 <button
-                                    key={btu}
-                                    onClick={() => onToggleBTU(btu)}
-                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${isActive
-                                            ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                                            : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
+                                    key={option._id}
+                                    onClick={() => onToggleBTU(option.value as number)}
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${isActive
+                                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                                        : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
                                         }`}
                                 >
-                                    ❄️ {btu.toLocaleString()}
+                                    ❄️ {option.label}
+                                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20' : 'bg-white/10'}`}>
+                                        {option.count}
+                                    </span>
                                 </button>
                             );
                         })}

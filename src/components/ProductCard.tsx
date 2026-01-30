@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { getCategoryLabel } from '@/lib/whatsapp';
+import { formatPrice } from '@/lib/formatters';
 
 interface ProductCardProps {
   image: string;
@@ -78,7 +79,7 @@ export default function ProductCard({
 
       {/* Price and Button */}
       <div className="flex justify-between items-center mt-auto">
-        <span className="text-emerald-500 font-bold text-lg">{price}</span>
+        <span className="text-emerald-500 font-bold text-lg">{formatPrice(price)}</span>
         <button
           onClick={(e) => {
             e.preventDefault();

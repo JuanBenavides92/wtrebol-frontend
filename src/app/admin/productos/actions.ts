@@ -26,7 +26,9 @@ export async function saveProductAction(
 
         // Get session cookie for authentication
         const cookieStore = await cookies();
-        const sessionCookie = cookieStore.get('connect.sid');
+        const sessionCookie = cookieStore.get('wtrebol.sid'); // ✅ Nombre correcto del backend
+
+        console.log('🍪 [Server Action] Session cookie:', sessionCookie ? 'Found' : 'Not found');
 
         const headers: HeadersInit = {
             'Content-Type': 'application/json',
@@ -35,6 +37,9 @@ export async function saveProductAction(
         // Add cookie if exists
         if (sessionCookie) {
             headers['Cookie'] = `${sessionCookie.name}=${sessionCookie.value}`;
+            console.log('✅ [Server Action] Cookie added to headers');
+        } else {
+            console.warn('⚠️ [Server Action] No session cookie found - request will fail auth');
         }
 
         // Make request to backend
@@ -50,11 +55,12 @@ export async function saveProductAction(
         if (response.ok) {
             console.log('✅ [Server Action] Product saved successfully');
 
-            // ✨ REVALIDATE PATHS - This is the key to solving the problem
-            revalidatePath('/tienda');
-            revalidatePath('/admin/productos');
+            // ✨ REVALIDATE PATHS - Revalidación completa para garantizar actualización
+            revalidatePath('/tienda'); // Página de tienda
+            revalidatePath('/admin/productos'); // Lista de productos admin
+            revalidatePath('/', 'layout'); // Layout raíz para forzar recarga completa
 
-            console.log('🔄 [Server Action] Paths revalidated: /tienda, /admin/productos');
+            console.log('🔄 [Server Action] Paths revalidated: /tienda, /admin/productos, / (layout)');
 
             return {
                 success: true,

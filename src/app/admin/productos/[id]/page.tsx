@@ -197,6 +197,17 @@ export default function ProductFormPage() {
                 const result = await response.json();
                 const data = result.success ? result.data : result;
 
+                // Backward compatibility: migrate imageUrl to images array
+                let images = data.images || [];
+                let mainImageIndex = data.mainImageIndex || 0;
+
+                // If no images array but has imageUrl, migrate it
+                if (images.length === 0 && data.imageUrl) {
+                    console.log('📸 [loadProduct] Migrating imageUrl to images array:', data.imageUrl);
+                    images = [data.imageUrl];
+                    mainImageIndex = 0;
+                }
+
                 setFormData({
                     title: data.title || '',
                     description: data.description || '',
@@ -208,9 +219,9 @@ export default function ProductFormPage() {
                     condition: data.condition || 'nuevo',
                     btuCapacity: data.btuCapacity || 0,
                     usageType: data.usageType || 'residencial',
-                    images: data.images || [],
-                    mainImageIndex: data.mainImageIndex || 0,
-                    imageUrl: data.imageUrl || '',
+                    images: images,
+                    mainImageIndex: mainImageIndex,
+                    imageUrl: data.imageUrl || (images.length > 0 ? images[0] : ''),
                     longDescription: data.longDescription || '',
                     videoUrl: data.videoUrl || '',
                     documents: data.documents || [],
@@ -295,6 +306,11 @@ export default function ProductFormPage() {
 
             if (result.success) {
                 console.log('✅ Producto guardado y caché revalidado');
+
+                // Forzar actualización del router para invalidar caché del cliente
+                router.refresh();
+
+                // Redirigir a lista de productos
                 router.push('/admin/productos');
             } else {
                 console.error('❌ Error al guardar:', result.error);
@@ -420,13 +436,15 @@ export default function ProductFormPage() {
                                         <CreatableSelect
                                             value={formData.category}
                                             onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
-                                            options={categoryOptions.options.map(opt => ({ value: opt.value, label: opt.label }))}
+                                            options={categoryOptions.options.map(opt => ({ _id: opt._id, value: opt.value, label: opt.label }))}
                                             onCreateOption={async (label) => {
                                                 return await categoryOptions.createOption(label);
                                             }}
                                             label="Categoría"
                                             placeholder="Seleccionar categoría..."
                                             isLoading={categoryOptions.isLoading}
+                                            optionType="category"
+                                            onRefresh={() => categoryOptions.refreshOptions()}
                                         />
 
                                         <div>
@@ -452,27 +470,62 @@ export default function ProductFormPage() {
                                         </div>
 
                                         <CreatableSelect
-                                            value={String(formData.btuCapacity || '')}
-                                            onChange={(value) => setFormData(prev => ({ ...prev, btuCapacity: Number(value) || 0 }))}
-                                            options={btuOptions.options.map(opt => ({ value: opt.value, label: opt.label }))}
+                                            value={formData.btuCapacity ? String(formData.btuCapacity) : ''}
+                                            onChange={(value) => {
+                                                console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                                                console.log('🔵 [ProductForm BTU] onChange LLAMADO');
+                                                console.log('📥 [ProductForm BTU] Valor recibido:', value);
+                                                console.log('📋 [ProductForm BTU] Estado actual btuCapacity:', formData.btuCapacity);
+
+                                                // Mantener como número en formData para compatibilidad con backend
+                                                // pero aceptar string del CreatableSelect
+                                                const numValue = value ? parseInt(value, 10) : 0;
+                                                console.log('🔢 [ProductForm BTU] Valor convertido a número:', numValue);
+
+                                                setFormData(prev => {
+                                                    console.log('🔄 [ProductForm BTU] Actualizando formData...');
+                                                    console.log('📋 [ProductForm BTU] Valor anterior:', prev.btuCapacity);
+                                                    const newData = { ...prev, btuCapacity: numValue };
+                                                    console.log('📋 [ProductForm BTU] Valor nuevo:', newData.btuCapacity);
+                                                    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                                                    return newData;
+                                                });
+                                            }}
+                                            options={btuOptions.options.map(opt => ({ _id: opt._id, value: opt.value, label: opt.label }))}
                                             onCreateOption={async (label) => {
-                                                return await btuOptions.createOption(label);
+                                                console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                                                console.log('🟢 [ProductForm BTU] onCreateOption LLAMADO');
+                                                console.log('📝 [ProductForm BTU] Label a crear:', label);
+
+                                                const created = await btuOptions.createOption(label);
+
+                                                console.log('✅ [ProductForm BTU] Opción creada:', created);
+                                                console.log('📋 [ProductForm BTU] Opciones actuales:', btuOptions.options.length);
+                                                console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+                                                // Retornar la opción creada para que CreatableSelect la maneje
+                                                return created;
                                             }}
                                             label="Capacidad (BTU)"
                                             placeholder="Seleccionar capacidad..."
                                             isLoading={btuOptions.isLoading}
+                                            error={btuOptions.error}
+                                            optionType="btu"
+                                            onRefresh={() => btuOptions.refreshOptions()}
                                         />
 
                                         <CreatableSelect
                                             value={formData.condition}
                                             onChange={(value) => setFormData(prev => ({ ...prev, condition: value as 'nuevo' | 'usado' }))}
-                                            options={conditionOptions.options.map(opt => ({ value: opt.value, label: opt.label }))}
+                                            options={conditionOptions.options.map(opt => ({ _id: opt._id, value: opt.value, label: opt.label }))}
                                             onCreateOption={async (label) => {
                                                 return await conditionOptions.createOption(label);
                                             }}
                                             label="Condición"
                                             placeholder="Seleccionar condición..."
                                             isLoading={conditionOptions.isLoading}
+                                            optionType="condition"
+                                            onRefresh={() => conditionOptions.refreshOptions()}
                                         />
 
                                         <div className="md:col-span-2">
@@ -536,6 +589,8 @@ export default function ProductFormPage() {
                                                 ...prev,
                                                 images,
                                                 mainImageIndex: mainIndex,
+                                                // Sync imageUrl with main image for backward compatibility
+                                                imageUrl: images.length > 0 ? images[mainIndex] : prev.imageUrl,
                                             }));
                                         }}
                                         maxImages={10}

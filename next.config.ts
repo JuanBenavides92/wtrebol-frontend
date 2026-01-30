@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Desactivar optimización en desarrollo para evitar errores 404
+    unoptimized: process.env.NODE_ENV === 'development',
     // Permitir imágenes de dominios externos
     remotePatterns: [
       {
