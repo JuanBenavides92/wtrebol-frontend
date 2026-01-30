@@ -63,6 +63,7 @@ export interface Content {
         estimatedDays?: string;
         availableRegions?: string[];
     };
+    estimatedDeliveryDays?: number; // Días numéricos para cálculos
     // Installation
     installation?: {
         required: boolean;

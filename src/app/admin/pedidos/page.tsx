@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, Search, Filter, Eye, Edit, Loader2, TrendingUp, ShoppingCart, Users, DollarSign } from 'lucide-react';
+import { Package, Search, Filter, Eye, Edit, Loader2, TrendingUp, ShoppingCart, Users, DollarSign, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import API_CONFIG from '@/lib/config';
@@ -53,11 +53,13 @@ export default function AdminOrdersPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     useEffect(() => {
         fetchOrders();
         fetchStats();
-    }, [filterStatus, searchQuery]);
+    }, [filterStatus, searchQuery, startDate, endDate]);
 
     const fetchOrders = async () => {
         try {
@@ -65,6 +67,8 @@ export default function AdminOrdersPage() {
             const params = new URLSearchParams();
             if (filterStatus) params.append('status', filterStatus);
             if (searchQuery) params.append('search', searchQuery);
+            if (startDate) params.append('startDate', startDate);
+            if (endDate) params.append('endDate', endDate);
             if (params.toString()) url += `?${params.toString()}`;
 
             const response = await fetch(url, { credentials: 'include' });
@@ -72,11 +76,7 @@ export default function AdminOrdersPage() {
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
-                    // Filtrar pedidos pendientes de pago
-                    const paidOrders = data.orders.filter((order: Order) =>
-                        order.status !== 'pending_payment'
-                    );
-                    setOrders(paidOrders);
+                    setOrders(data.orders);
                 }
             }
         } catch (error) {
@@ -168,29 +168,77 @@ export default function AdminOrdersPage() {
 
             {/* Filters */}
             <div className="bg-slate-800/30 border border-white/10 rounded-xl p-6 mb-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Buscar por número de pedido, email o nombre..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-sky-500/50 focus:bg-slate-800 transition-all"
-                            />
+                <div className="flex flex-col gap-4">
+                    {/* Search and Status Row */}
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar por número de pedido, email o nombre..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-sky-500/50 focus:bg-slate-800 transition-all"
+                                />
+                            </div>
                         </div>
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            className="px-4 py-3 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-500/50 transition-all"
+                        >
+                            <option value="">Todos los estados</option>
+                            {Object.entries(STATUS_LABELS).map(([status, { label }]) => (
+                                <option key={status} value={status}>{label}</option>
+                            ))}
+                        </select>
                     </div>
-                    <select
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                        className="px-4 py-3 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-500/50 transition-all"
-                    >
-                        <option value="">Todos los estados</option>
-                        {Object.entries(STATUS_LABELS).map(([status, { label }]) => (
-                            <option key={status} value={status}>{label}</option>
-                        ))}
-                    </select>
+
+                    {/* Date Range Row */}
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1">
+                            <label className="block text-xs font-medium text-gray-400 mb-2">Fecha Inicio</label>
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none z-10" />
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-500/50 focus:bg-slate-800 transition-all [color-scheme:dark]"
+                                    style={{
+                                        colorScheme: 'dark'
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div className="flex-1">
+                            <label className="block text-xs font-medium text-gray-400 mb-2">Fecha Fin</label>
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none z-10" />
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-500/50 focus:bg-slate-800 transition-all [color-scheme:dark]"
+                                    style={{
+                                        colorScheme: 'dark'
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        {(startDate || endDate) && (
+                            <button
+                                onClick={() => {
+                                    setStartDate('');
+                                    setEndDate('');
+                                }}
+                                className="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all border border-red-500/30 self-end"
+                            >
+                                Limpiar Fechas
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
 

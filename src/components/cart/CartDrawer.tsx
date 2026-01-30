@@ -117,12 +117,8 @@ export default function CartDrawer() {
                                     className="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-sky-500 hover:from-emerald-400 hover:to-sky-400 text-white font-bold rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
                                 >
                                     <ShoppingBag className="h-5 w-5" />
-                                    Proceder al Checkout
+                                    Proceder con la Compra
                                 </a>
-
-                                <p className="text-xs text-center text-gray-400">
-                                    💳 Pago seguro con tarjeta, PSE, Nequi y más
-                                </p>
 
                                 {/* Divider */}
                                 <div className="relative">
@@ -149,10 +145,6 @@ export default function CartDrawer() {
                                     </svg>
                                     Solicitar Cotización
                                 </button>
-
-                                <p className="text-xs text-center text-gray-400">
-                                    📱 O cotiza por WhatsApp
-                                </p>
                             </div>
                         )}
                     </motion.div>

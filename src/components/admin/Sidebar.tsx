@@ -15,13 +15,14 @@ import {
     Users,
     ChevronRight,
     LogOut,
-    Bell,
     Award,
     HelpCircle,
     Package,
     UserCog,
-    HardHat
+    HardHat,
+    Globe
 } from 'lucide-react';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
 
 const navigation = [
     {
@@ -109,6 +110,13 @@ const navigation = [
         gradient: 'from-pink-400 to-rose-500'
     },
     {
+        name: 'Sitio',
+        href: '/admin/sitio',
+        icon: Globe,
+        badge: null,
+        gradient: 'from-teal-400 to-cyan-500'
+    },
+    {
         name: 'Configuración',
         href: '/admin/configuracion',
         icon: Settings,
@@ -120,6 +128,7 @@ const navigation = [
 export default function Sidebar() {
     const pathname = usePathname();
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+    const { config } = useSiteConfig();
 
     return (
         <aside className="fixed left-0 top-0 h-screen w-72 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 border-r border-white/10 flex flex-col z-50">
@@ -131,7 +140,7 @@ export default function Sidebar() {
             <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 flex flex-col h-full">
-                {/* Logo */}
+                {/* Logo - DINÁMICO */}
                 <div className="p-6 border-b border-white/10">
                     <motion.div
                         className="flex items-center gap-3"
@@ -139,15 +148,25 @@ export default function Sidebar() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <motion.div
-                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-emerald-400 flex items-center justify-center shadow-lg shadow-sky-500/50"
-                            whileHover={{ scale: 1.1, rotate: 5 }}
-                            transition={{ type: 'spring', stiffness: 400 }}
-                        >
-                            <span className="text-2xl font-bold text-white">W</span>
-                        </motion.div>
+                        {config?.logoUrl ? (
+                            <motion.img
+                                src={config.logoUrl}
+                                alt={config.logoText || 'Logo'}
+                                className="h-12 w-auto object-contain"
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ type: 'spring', stiffness: 400 }}
+                            />
+                        ) : (
+                            <motion.div
+                                className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-emerald-400 flex items-center justify-center shadow-lg shadow-sky-500/50"
+                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                transition={{ type: 'spring', stiffness: 400 }}
+                            >
+                                <span className="text-2xl font-bold text-white">{config?.logoText?.[0] || 'W'}</span>
+                            </motion.div>
+                        )}
                         <div>
-                            <h1 className="text-xl font-bold text-white">WTREBOL</h1>
+                            <h1 className="text-xl font-bold text-white">{config?.logoText}</h1>
                             <p className="text-xs text-slate-400">Admin Panel</p>
                         </div>
                     </motion.div>
@@ -239,20 +258,6 @@ export default function Sidebar() {
 
                 {/* Footer Actions */}
                 <div className="p-4 border-t border-white/10 space-y-2">
-                    {/* Notifications */}
-                    <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all group">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center relative">
-                            <Bell className="h-5 w-5 text-white" />
-                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-900" />
-                        </div>
-                        <span className="font-medium text-slate-400 group-hover:text-white transition-colors flex-1 text-left">
-                            Notificaciones
-                        </span>
-                        <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
-                            2
-                        </span>
-                    </button>
-
                     {/* Logout */}
                     <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 transition-all group">
                         <div className="w-10 h-10 rounded-lg bg-white/5 group-hover:bg-red-500 flex items-center justify-center transition-colors">

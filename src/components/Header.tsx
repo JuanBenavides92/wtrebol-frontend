@@ -6,12 +6,14 @@ import { Menu, X, ShoppingCart, User, LogOut, Package } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useCustomerAuth } from '@/context/CustomerAuthContext';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const { cartCount, openCart } = useCart();
   const { customer, isAuthenticated, logout } = useCustomerAuth();
+  const { config } = useSiteConfig();
   const pathname = usePathname();
 
   const navItems = [
@@ -28,19 +30,34 @@ export default function Header() {
   return (
     <>
       <header className="fixed top-0 w-full z-50 h-20 flex items-center justify-between px-6 md:px-12 bg-slate-900/70 backdrop-blur-xl border-b border-white/10">
-        {/* Logo */}
+        {/* Logo - DINÁMICO */}
         <Link
           href="/"
           className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
         >
-          <div className="w-8 h-8 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-lg flex items-center justify-center font-bold text-white text-sm">
-            W
-          </div>
+          {config?.logoUrl ? (
+            // Logo como imagen desde S3
+            <img
+              src={config.logoUrl}
+              alt={config.logoText || 'Logo'}
+              style={{ height: `${config.logoHeight || 40}px` }}
+              className="w-auto object-contain"
+            />
+          ) : (
+            // Logo por defecto (letra W con gradiente)
+            <div className="w-8 h-8 bg-gradient-to-br from-sky-500 to-emerald-500 rounded-lg flex items-center justify-center font-bold text-white text-sm">
+              {config?.logoText?.[0] || 'W'}
+            </div>
+          )}
+
           <span className="text-lg font-bold tracking-tight text-white hidden md:inline">
-            WTREBOL <span className="font-light text-sky-500">INNOVACIÓN</span>
+            {config?.logoText}
+            {config?.logoSubtext && (
+              <span className="font-light text-sky-500"> {config.logoSubtext}</span>
+            )}
           </span>
           <span className="text-lg font-bold tracking-tight text-white md:hidden">
-            WTREBOL
+            {config?.logoText}
           </span>
         </Link>
 

@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CustomerAuthProvider } from "@/context/CustomerAuthContext";
 import ConditionalHeader from "@/components/ConditionalHeader";
 import CartDrawer from "@/components/cart/CartDrawer";
+import DynamicFavicon from "@/components/DynamicFavicon";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <DynamicFavicon />
         <AuthProvider>
           <CustomerAuthProvider>
             <CartProvider>

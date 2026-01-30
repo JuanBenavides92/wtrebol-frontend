@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getCategoryLabel, generateWhatsAppLink, parsePriceToNumber } from '@/lib/whatsapp';
 import { formatPrice } from '@/lib/formatters';
+import { convertToYouTubeEmbed, isYouTubeUrl } from '@/lib/youtube';
 
 interface ProductDetailClientProps {
     product: Content;
@@ -113,7 +114,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                             src={productImages[selectedImageIndex]}
                             alt={product.title}
                             fill
-                            className="object-contain p-8"
+                            className="object-cover"
                             priority
                         />
                         {/* Badges */}
@@ -156,7 +157,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                                         src={img}
                                         alt={`${product.title} - Image ${idx + 1}`}
                                         fill
-                                        className="object-contain p-2"
+                                        className="object-cover"
                                     />
                                 </button>
                             ))}
@@ -338,18 +339,27 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                             )}
 
                             {/* Video */}
-                            {product.videoUrl && (
-                                <div className="mt-6">
-                                    <h3 className="text-xl font-bold text-white mb-4">Video del Producto</h3>
-                                    <div className="aspect-video bg-slate-800 rounded-lg overflow-hidden">
-                                        <iframe
-                                            src={product.videoUrl}
-                                            className="w-full h-full"
-                                            allowFullScreen
-                                        />
+                            {product.videoUrl && (() => {
+                                const embedUrl = isYouTubeUrl(product.videoUrl)
+                                    ? convertToYouTubeEmbed(product.videoUrl)
+                                    : product.videoUrl;
+
+                                if (!embedUrl) return null;
+
+                                return (
+                                    <div className="mt-6">
+                                        <h3 className="text-xl font-bold text-white mb-4">Video del Producto</h3>
+                                        <div className="aspect-video bg-slate-800 rounded-lg overflow-hidden">
+                                            <iframe
+                                                src={embedUrl}
+                                                className="w-full h-full"
+                                                allowFullScreen
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                );
+                            })()}
                         </div>
                     )}
 
@@ -414,6 +424,71 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     </div>
                 )
             }
+
+            {/* Warranty & Shipping Info */}
+            <div className="grid md:grid-cols-2 gap-6">
+                {/* Warranty */}
+                {product.warranty && (product.warranty.duration || product.warranty.type || product.warranty.details) && (
+                    <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-2xl p-6">
+                        <div className="flex items-start gap-3 mb-4">
+                            <div className="text-3xl">🛡️</div>
+                            <div>
+                                <h3 className="text-xl font-bold text-white">Garantía</h3>
+                                {product.warranty.duration && (
+                                    <p className="text-emerald-400 font-semibold">{product.warranty.duration}</p>
+                                )}
+                            </div>
+                        </div>
+                        {product.warranty.type && (
+                            <div className="mb-2">
+                                <span className="text-sm text-gray-400">Tipo: </span>
+                                <span className="text-white">{product.warranty.type}</span>
+                            </div>
+                        )}
+                        {product.warranty.details && (
+                            <p className="text-gray-300 text-sm mt-3 leading-relaxed">
+                                {product.warranty.details}
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {/* Shipping */}
+                {product.shipping && (
+                    <div className="bg-gradient-to-br from-sky-500/10 to-sky-600/5 border border-sky-500/20 rounded-2xl p-6">
+                        <div className="flex items-start gap-3 mb-4">
+                            <div className="text-3xl">🚚</div>
+                            <div>
+                                <h3 className="text-xl font-bold text-white">Envío</h3>
+                                {product.shipping.freeShipping ? (
+                                    <p className="text-sky-400 font-semibold">Envío Gratis</p>
+                                ) : product.shipping.shippingCost ? (
+                                    <p className="text-sky-400 font-semibold">{formatPrice(product.shipping.shippingCost)}</p>
+                                ) : null}
+                            </div>
+                        </div>
+                        {product.shipping.estimatedDays && (
+                            <div className="mb-2">
+                                <span className="text-sm text-gray-400">Tiempo estimado: </span>
+                                <span className="text-white">{product.shipping.estimatedDays}</span>
+                            </div>
+                        )}
+                        {product.estimatedDeliveryDays && product.estimatedDeliveryDays > 0 && (
+                            <div className="mt-3 flex items-center gap-2 text-sm">
+                                <span className="text-gray-400">Entrega estimada:</span>
+                                <span className="text-white font-medium">
+                                    {new Date(Date.now() + product.estimatedDeliveryDays * 24 * 60 * 60 * 1000).toLocaleDateString('es-CO', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </div >
     );
 }

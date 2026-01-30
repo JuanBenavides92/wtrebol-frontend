@@ -229,8 +229,16 @@ export default function ProductFormPage() {
                     features: data.features || [],
                     faqs: data.faqs || [],
                     badges: data.badges || [],
-                    warranty: data.warranty || { duration: '', type: '', details: '' },
-                    shipping: data.shipping || { freeShipping: false, shippingCost: '', estimatedDays: '' },
+                    warranty: {
+                        duration: data.warranty?.duration || '',
+                        type: data.warranty?.type || '',
+                        details: data.warranty?.details || '',
+                    },
+                    shipping: {
+                        freeShipping: data.shipping?.freeShipping || false,
+                        shippingCost: data.shipping?.shippingCost || '',
+                        estimatedDays: data.shipping?.estimatedDays || '',
+                    },
                     estimatedDeliveryDays: data.estimatedDeliveryDays || 0,
                     isActive: data.isActive ?? true,
                     inStock: data.inStock ?? true,
@@ -744,15 +752,13 @@ export default function ProductFormPage() {
                                             {!formData.shipping.freeShipping && (
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-400 mb-2">Costo de Envío</label>
-                                                    <input
-                                                        type="text"
+                                                    <PriceInput
                                                         value={formData.shipping.shippingCost}
-                                                        onChange={(e) => setFormData(prev => ({
+                                                        onChange={(value) => setFormData(prev => ({
                                                             ...prev,
-                                                            shipping: { ...prev.shipping, shippingCost: e.target.value }
+                                                            shipping: { ...prev.shipping, shippingCost: value }
                                                         }))}
-                                                        className="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                                                        placeholder="Ej: $50,000"
+                                                        placeholder="Ej: $50.000"
                                                     />
                                                 </div>
                                             )}
