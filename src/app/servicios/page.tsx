@@ -1,55 +1,11 @@
+'use client';
+
 import type { Metadata } from 'next';
 import PageLayout from '@/components/PageLayout';
 import Footer from '@/components/Footer';
 import { CheckCircle2 } from 'lucide-react';
-
-export const metadata: Metadata = {
-    title: 'Nuestros Servicios - WTREBOL Innovación',
-    description: 'Climatización integral, refrigeración industrial, mantenimiento experto, obra civil, instalación profesional y asesoría integral.',
-    keywords: ['servicios climatización', 'refrigeración industrial Colombia', 'mantenimiento aire acondicionado', 'instalación HVAC', 'obra civil climatización', 'asesoría técnica'],
-    authors: [{ name: 'WTREBOL S.A.S' }],
-    creator: 'WTREBOL S.A.S',
-    publisher: 'WTREBOL S.A.S',
-
-    // Open Graph
-    openGraph: {
-        title: 'Nuestros Servicios - WTREBOL Innovación',
-        description: 'Climatización integral, refrigeración industrial, mantenimiento experto, obra civil, instalación profesional y asesoría integral.',
-        url: 'https://wtrebol.com/servicios',
-        siteName: 'WTREBOL',
-        locale: 'es_CO',
-        type: 'website',
-        images: [
-            {
-                url: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1200&h=630&fit=crop',
-                width: 1200,
-                height: 630,
-                alt: 'WTREBOL - Servicios de Climatización y Refrigeración',
-            },
-        ],
-    },
-
-    // Twitter Card
-    twitter: {
-        card: 'summary_large_image',
-        title: 'Nuestros Servicios - WTREBOL Innovación',
-        description: 'Climatización integral, refrigeración industrial, mantenimiento experto, obra civil, instalación profesional y asesoría integral.',
-        images: ['https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1200&h=630&fit=crop'],
-    },
-
-    // Robots
-    robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-            index: true,
-            follow: true,
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-        },
-    },
-};
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 interface ServiceData {
     features?: string[];
@@ -72,105 +28,190 @@ interface Service {
     updatedAt: string;
 }
 
-async function getServices(): Promise<Service[]> {
-    try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-        const response = await fetch(`${API_URL}/api/content/service?active=true`, {
-            next: { revalidate: 60 }, // Revalidar cada 60 segundos
-        });
+export default function ServiciosPage() {
+    const [services, setServices] = useState<Service[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-        if (!response.ok) {
-            console.error('Error fetching services:', response.statusText);
-            return [];
+    useEffect(() => {
+        loadServices();
+    }, []);
+
+    const loadServices = async () => {
+        try {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+            const response = await fetch(`${API_URL}/api/content/service?active=true`);
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && Array.isArray(result.data)) {
+                    setServices(result.data.sort((a: Service, b: Service) => (a.order || 0) - (b.order || 0)));
+                }
+            }
+        } catch (error) {
+            console.error('Error loading services:', error);
+        } finally {
+            setIsLoading(false);
         }
-
-        const result = await response.json();
-
-        if (result.success && Array.isArray(result.data)) {
-            // Ordenar por el campo order
-            return result.data.sort((a: Service, b: Service) => (a.order || 0) - (b.order || 0));
-        }
-
-        return [];
-    } catch (error) {
-        console.error('Error loading services:', error);
-        return [];
-    }
-}
-
-export default async function ServiciosPage() {
-    const services = await getServices();
+    };
 
     return (
         <>
-            <PageLayout>
-                <h1 className="text-4xl font-bold text-sky-500 mb-4">Nuestros Servicios</h1>
-                <p className="text-gray-400 mb-12 text-lg">Soluciones integrales diseñadas para tus necesidades</p>
+            <div className="min-h-screen bg-white">
+                <PageLayout>
+                    {/* Header Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-16"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.5 }}
+                            className="inline-block mb-4"
+                        >
+                            <span className="px-6 py-2 bg-gradient-to-r from-sky-100 to-blue-100 border border-sky-300 rounded-full text-sky-700 font-semibold text-sm tracking-wider uppercase">
+                                Lo Que Hacemos
+                            </span>
+                        </motion.div>
+                        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
+                            Nuestros <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-blue-600">Servicios</span>
+                        </h1>
+                        <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                            Soluciones integrales diseñadas para tus necesidades de climatización y refrigeración
+                        </p>
+                    </motion.div>
 
-                {services.length === 0 ? (
-                    <div className="text-center py-12 bg-slate-800/30 border border-white/10 rounded-xl">
-                        <p className="text-gray-400 text-lg">No hay servicios disponibles en este momento.</p>
-                    </div>
-                ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {services.map((service) => {
-                            const features = service.data?.features || [];
-                            const benefits = service.data?.benefits || [];
-                            const icon = service.data?.icon || '🔧';
-                            const gradient = service.data?.gradient || 'linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)';
+                    {/* Services Grid */}
+                    {isLoading ? (
+                        <div className="text-center py-20">
+                            <div className="inline-block w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
+                            <p className="text-slate-600 mt-4">Cargando servicios...</p>
+                        </div>
+                    ) : services.length === 0 ? (
+                        <div className="text-center py-12 bg-white border-2 border-slate-200 rounded-2xl shadow-lg">
+                            <p className="text-slate-600 text-lg">No hay servicios disponibles en este momento.</p>
+                        </div>
+                    ) : (
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {services.map((service, index) => {
+                                const features = service.data?.features || [];
+                                const benefits = service.data?.benefits || [];
+                                const icon = service.data?.icon || '🔧';
+                                const color = service.data?.color || '#0EA5E9';
 
-                            return (
-                                <div
-                                    key={service._id}
-                                    className="bg-slate-800/30 border border-white/10 rounded-xl p-6 hover:border-sky-500/50 transition-all hover:shadow-lg hover:shadow-sky-500/20"
-                                    style={{
-                                        borderImage: `${gradient} 1`,
-                                    }}
-                                >
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <span className="text-4xl">{icon}</span>
-                                        <h3 className="text-xl font-bold text-white">{service.title}</h3>
-                                    </div>
+                                return (
+                                    <motion.div
+                                        key={service._id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                                        className="group bg-white rounded-2xl p-8 border-2 border-slate-200 hover:border-sky-300 hover:shadow-2xl hover:shadow-sky-200/50 transition-all duration-500 relative overflow-hidden"
+                                    >
+                                        {/* Top Gradient Bar */}
+                                        <div
+                                            className="absolute top-0 left-0 right-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                            style={{
+                                                background: `linear-gradient(90deg, ${color}, ${color}dd)`
+                                            }}
+                                        />
 
-                                    {service.description && (
-                                        <p className="text-gray-400 mb-6 text-sm leading-relaxed">{service.description}</p>
-                                    )}
-
-                                    {features.length > 0 && (
-                                        <div className="mb-6">
-                                            <h4 className="text-sm font-semibold text-sky-400 mb-3">Características:</h4>
-                                            <div className="space-y-2">
-                                                {features.map((feature, idx) => (
-                                                    <div key={idx} className="flex items-start gap-2 text-gray-300">
-                                                        <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                                                        <span className="text-xs">{feature}</span>
-                                                    </div>
-                                                ))}
+                                        {/* Icon & Title */}
+                                        <div className="flex items-center gap-4 mb-6">
+                                            <div
+                                                className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform duration-500"
+                                                style={{
+                                                    background: `linear-gradient(135deg, ${color}20, ${color}10)`,
+                                                    border: `2px solid ${color}30`
+                                                }}
+                                            >
+                                                {icon}
                                             </div>
+                                            <h3 className="text-2xl font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
+                                                {service.title}
+                                            </h3>
                                         </div>
-                                    )}
 
-                                    {benefits.length > 0 && (
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-sky-400 mb-3">Beneficios:</h4>
-                                            <div className="space-y-2">
-                                                {benefits.map((benefit, idx) => (
-                                                    <div key={idx} className="flex items-start gap-2 text-gray-300">
-                                                        <CheckCircle2 className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                                                        <span className="text-xs">{benefit}</span>
-                                                    </div>
-                                                ))}
+                                        {/* Description */}
+                                        {service.description && (
+                                            <p className="text-slate-600 mb-6 leading-relaxed">
+                                                {service.description}
+                                            </p>
+                                        )}
+
+                                        {/* Features */}
+                                        {features.length > 0 && (
+                                            <div className="mb-6">
+                                                <h4 className="text-sm font-bold text-sky-700 mb-3 uppercase tracking-wide">
+                                                    Características:
+                                                </h4>
+                                                <div className="space-y-2">
+                                                    {features.map((feature, idx) => (
+                                                        <div key={idx} className="flex items-start gap-2">
+                                                            <CheckCircle2 className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                                            <span className="text-slate-700 text-sm">{feature}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </PageLayout>
+                                        )}
+
+                                        {/* Benefits */}
+                                        {benefits.length > 0 && (
+                                            <div>
+                                                <h4 className="text-sm font-bold text-blue-700 mb-3 uppercase tracking-wide">
+                                                    Beneficios:
+                                                </h4>
+                                                <div className="space-y-2">
+                                                    {benefits.map((benefit, idx) => (
+                                                        <div key={idx} className="flex items-start gap-2">
+                                                            <CheckCircle2 className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                                                            <span className="text-slate-700 text-sm">{benefit}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Hover Glow Effect */}
+                                        <div
+                                            className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none"
+                                            style={{
+                                                background: `radial-gradient(circle at 50% 0%, ${color}, transparent 70%)`
+                                            }}
+                                        />
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* Bottom CTA */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.8 }}
+                        className="mt-16 text-center"
+                    >
+                        <div className="inline-block bg-gradient-to-r from-sky-50 via-blue-50 to-indigo-50 border-2 border-sky-200 rounded-2xl p-10 shadow-lg shadow-sky-100/50">
+                            <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                                ¿Necesitas un servicio personalizado?
+                            </h3>
+                            <p className="text-slate-600 mb-6 max-w-2xl">
+                                Contáctanos para una consulta gratuita y descubre cómo nuestros expertos pueden ayudarte
+                            </p>
+                            <a
+                                href="/contacto"
+                                className="inline-block px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-400/50 hover:scale-105 transition-all duration-300"
+                            >
+                                Solicitar Consulta
+                            </a>
+                        </div>
+                    </motion.div>
+                </PageLayout>
+            </div>
             <Footer showFooter={true} isStatic={true} />
         </>
     );
 }
-

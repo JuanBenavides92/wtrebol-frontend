@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, ShoppingBag } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, ShoppingBag, Star } from 'lucide-react';
 import API_CONFIG from '@/lib/config';
 import { formatPrice } from '@/lib/formatters';
 import DeleteProductModal from '@/components/admin/DeleteProductModal';
@@ -17,6 +17,7 @@ interface Product {
     price?: string;
     category?: string;
     isActive: boolean;
+    isFeatured?: boolean;
     createdAt: string;
     updatedAt: string;
 }
@@ -80,6 +81,39 @@ export default function ProductsPage() {
             if (response.ok) loadProducts();
         } catch (error) {
             console.error('Error toggling product:', error);
+        }
+    };
+
+    const toggleFeatured = async (id: string, currentFeatured: boolean) => {
+        console.log('⭐ [FRONTEND] toggleFeatured llamado:', { id, currentFeatured });
+        try {
+            const url = API_CONFIG.url(`${API_CONFIG.ENDPOINTS.CONTENT}/${id}/toggle-featured`);
+            console.log('🌐 [FRONTEND] URL completa:', url);
+            console.log('📡 [FRONTEND] Enviando PATCH request...');
+
+            const response = await fetch(url, {
+                method: 'PATCH',
+                credentials: 'include',
+            });
+
+            console.log('📡 [FRONTEND] Response status:', response.status);
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ [FRONTEND] Resultado:', result);
+                if (result.success) {
+                    loadProducts();
+                } else {
+                    alert(result.message || 'Error al cambiar estado destacado');
+                }
+            } else {
+                const result = await response.json();
+                console.error('❌ [FRONTEND] Error response:', result);
+                alert(result.message || 'Error al cambiar estado destacado');
+            }
+        } catch (error) {
+            console.error('💥 [FRONTEND] Error toggling featured:', error);
+            alert('Error al cambiar estado destacado');
         }
     };
 
@@ -204,6 +238,7 @@ export default function ProductsPage() {
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Nombre</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Descripción</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Precio</th>
+                                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-300">Destacado</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Estado</th>
                                 <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Acciones</th>
                             </tr>
@@ -238,6 +273,20 @@ export default function ProductsPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <p className="text-emerald-400 font-semibold">{formatPrice(product.price)}</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex justify-center">
+                                            <button
+                                                onClick={() => toggleFeatured(product._id, product.isFeatured || false)}
+                                                className={`p-2 rounded-lg transition-all ${product.isFeatured
+                                                    ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                                                    : 'bg-slate-700/50 text-gray-500 hover:bg-slate-700 hover:text-amber-400'
+                                                    }`}
+                                                title={product.isFeatured ? 'Quitar de destacados' : 'Marcar como destacado'}
+                                            >
+                                                <Star className={`h-5 w-5 ${product.isFeatured ? 'fill-amber-400' : ''}`} />
+                                            </button>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <button

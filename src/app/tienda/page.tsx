@@ -132,26 +132,43 @@ export default async function TiendaPage() {
 
     return (
         <>
-            <PageLayout>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <div>
-                        <h1 className="text-4xl font-bold text-sky-500 mb-2">Tienda WTREBOL</h1>
-                        <p className="text-gray-400 text-lg">Equipos y accesorios de aire acondicionado de primera calidad</p>
+            <div className="min-h-screen bg-white">
+                <PageLayout>
+                    {/* Header Section */}
+                    <div className="text-center mb-12">
+                        <div className="inline-block mb-4">
+                            <span className="px-6 py-2 bg-gradient-to-r from-sky-100 to-blue-100 border border-sky-300 rounded-full text-sky-700 font-semibold text-sm tracking-wider uppercase">
+                                Nuestra Tienda
+                            </span>
+                        </div>
+                        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
+                            Tienda <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-blue-600">WTREBOL</span>
+                        </h1>
+                        <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                            Equipos y accesorios de aire acondicionado de primera calidad
+                        </p>
                     </div>
-                </div>
 
-                {/* Client Component for filters, calculator, and cart functionality */}
-                <ProductListClient products={displayProducts} />
+                    {/* Client Component for filters, calculator, and cart functionality */}
+                    <ProductListClient products={displayProducts} />
 
-                <div className="mt-16 p-8 bg-gradient-to-r from-sky-500/10 to-emerald-500/10 border border-sky-500/20 rounded-2xl text-center">
-                    <p className="text-gray-200 text-lg mb-4">
-                        ¿No encuentras lo que buscas? Contáctanos para consultar sobre equipos personalizados.
-                    </p>
-                    <p className="text-gray-400">Realizamos entregas a toda Colombia | Garantía en todos nuestros productos</p>
-                </div>
-            </PageLayout>
+                    {/* Bottom CTA */}
+                    <div className="mt-16 text-center">
+                        <div className="inline-block bg-gradient-to-r from-sky-50 via-blue-50 to-indigo-50 border-2 border-sky-200 rounded-2xl p-10 shadow-lg shadow-sky-100/50">
+                            <p className="text-slate-700 text-lg mb-4 font-medium">
+                                ¿No encuentras lo que buscas?
+                            </p>
+                            <p className="text-slate-600 mb-6">
+                                Contáctanos para consultar sobre equipos personalizados
+                            </p>
+                            <p className="text-slate-500 text-sm">
+                                Realizamos entregas a toda Colombia | Garantía en todos nuestros productos
+                            </p>
+                        </div>
+                    </div>
+                </PageLayout>
+            </div>
             <Footer showFooter={true} isStatic={true} />
         </>
     );
 }
-

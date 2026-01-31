@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 interface SlideSectionProps {
   backgroundImage: string;
-  overlay?: 'to-right' | 'to-left' | 'darker';
+  overlay?: 'to-right' | 'to-left' | 'darker' | 'full-background';
   isActive: boolean;
   children: ReactNode;
 }
@@ -13,18 +13,28 @@ export default function SlideSection({
   isActive,
   children,
 }: SlideSectionProps) {
-  const overlayStyles = {
-    'to-right': 'linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4))',
-    'to-left': 'linear-gradient(to left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6))',
-    'darker': 'rgba(15, 23, 42, 0.95)',
-  };
-
   // 🔍 LOG: Ver el estado de renderizado
   console.log('📦 [SlideSection] Renderizando:', {
     isActive,
+    overlay,
     hasBackgroundImage: !!backgroundImage,
     backgroundImage: backgroundImage?.substring(0, 50) + '...'
   });
+
+  // Determinar el estilo de fondo según el tipo de overlay
+  const getBackgroundStyle = () => {
+    if (!backgroundImage) {
+      return '#ffffff';
+    }
+
+    // Si es 'full-background', mostrar la imagen completa con oscurecimiento sutil
+    if (overlay === 'full-background') {
+      return `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('${backgroundImage}') center/cover no-repeat`;
+    }
+
+    // Para otros overlays, usar el overlay blanco original
+    return `linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url('${backgroundImage}') center/cover`;
+  };
 
   return (
     <div
@@ -34,9 +44,7 @@ export default function SlideSection({
         width: '100vw',
         height: 'calc(100vh - 80px)',
         flexBasis: '100vw',
-        background: backgroundImage
-          ? `linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url('${backgroundImage}') center/cover`
-          : '#ffffff',
+        background: getBackgroundStyle(),
       }}
     >
       {/* Content */}
@@ -48,4 +56,3 @@ export default function SlideSection({
     </div>
   );
 }
-

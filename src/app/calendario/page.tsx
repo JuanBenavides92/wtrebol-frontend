@@ -162,38 +162,51 @@ export default function CalendarioPage() {
     if (bookingComplete) {
         return (
             <>
-                <PageLayout>
-                    <div className="flex flex-col items-center justify-center min-h-96">
-                        <CheckCircle2 className="h-20 w-20 text-emerald-500 mb-6 animate-bounce" />
-                        <h2 className="text-4xl font-bold text-white mb-4">¡Cita Agendada Exitosamente!</h2>
-                        <div className="bg-slate-800/50 border border-white/10 rounded-xl p-6 max-w-md">
-                            <p className="text-gray-300 text-center mb-4">
-                                Hemos recibido tu solicitud de cita para:
-                            </p>
-                            <div className="space-y-2 text-sky-200">
-                                <p><strong>Servicio:</strong> {serviceLabels[formData.type]}</p>
-                                <p><strong>Fecha:</strong> {new Date(formData.scheduledDate).toLocaleDateString('es-CO', {
-                                    weekday: 'long',
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                })}</p>
-                                <p><strong>Hora:</strong> {formData.startTime}</p>
+                <div className="min-h-screen bg-white">
+                    <PageLayout>
+                        <div className="flex flex-col items-center justify-center min-h-96 py-20">
+                            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center mb-6 animate-bounce shadow-lg shadow-emerald-200/50">
+                                <CheckCircle2 className="h-12 w-12 text-white" />
                             </div>
-                            <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
-                                <p className="text-blue-200 text-sm text-center">
-                                    📧 Recibirás un email de confirmación en {formData.customer.email}
+                            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">¡Cita Agendada!</h2>
+                            <div className="bg-white border-2 border-slate-200 rounded-2xl p-8 max-w-md shadow-xl shadow-slate-200/50">
+                                <p className="text-slate-700 text-center mb-6 text-lg">
+                                    Hemos recibido tu solicitud de cita para:
                                 </p>
+                                <div className="space-y-3 text-slate-700">
+                                    <p className="flex items-center gap-2">
+                                        <span className="font-bold text-sky-600">Servicio:</span>
+                                        <span>{serviceLabels[formData.type]}</span>
+                                    </p>
+                                    <p className="flex items-center gap-2">
+                                        <span className="font-bold text-sky-600">Fecha:</span>
+                                        <span>{new Date(formData.scheduledDate).toLocaleDateString('es-CO', {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        })}</span>
+                                    </p>
+                                    <p className="flex items-center gap-2">
+                                        <span className="font-bold text-sky-600">Hora:</span>
+                                        <span>{formData.startTime}</span>
+                                    </p>
+                                </div>
+                                <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-sky-50 border-2 border-blue-200 rounded-xl">
+                                    <p className="text-blue-700 text-sm text-center font-medium">
+                                        📧 Recibirás un email de confirmación en {formData.customer.email}
+                                    </p>
+                                </div>
                             </div>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="mt-8 px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-400/50 hover:scale-105 transition-all duration-300"
+                            >
+                                Agendar Otra Cita
+                            </button>
                         </div>
-                        <button
-                            onClick={() => window.location.reload()}
-                            className="mt-6 px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-lg transition-colors"
-                        >
-                            Agendar Otra Cita
-                        </button>
-                    </div>
-                </PageLayout>
+                    </PageLayout>
+                </div>
                 <Footer showFooter={true} isStatic={true} />
             </>
         );
@@ -201,239 +214,253 @@ export default function CalendarioPage() {
 
     return (
         <>
-            <PageLayout>
-                <h1 className="text-4xl font-bold text-sky-500 mb-2">Agendar Servicio</h1>
-                <p className="text-gray-400 mb-8 text-lg">
-                    Agenda tu cita en 3 simples pasos
-                </p>
-
-                {/* Progress Steps */}
-                <div className="flex justify-center mb-12">
-                    <div className="flex items-center space-x-4">
-                        {[1, 2, 3].map((s) => (
-                            <div key={s} className="flex items-center">
-                                <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold ${step >= s ? 'bg-sky-500 text-white' : 'bg-slate-700 text-gray-400'
-                                    }`}>
-                                    {s}
-                                </div>
-                                {s < 3 && (
-                                    <div className={`w-16 h-1 mx-2 ${step > s ? 'bg-sky-500' : 'bg-slate-700'
-                                        }`} />
-                                )}
-                            </div>
-                        ))}
+            <div className="min-h-screen bg-white">
+                <PageLayout>
+                    {/* Header */}
+                    <div className="text-center mb-12">
+                        <div className="inline-block mb-4">
+                            <span className="px-6 py-2 bg-gradient-to-r from-sky-100 to-blue-100 border border-sky-300 rounded-full text-sky-700 font-semibold text-sm tracking-wider uppercase">
+                                Agenda Tu Cita
+                            </span>
+                        </div>
+                        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
+                            Agendar <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-blue-600">Servicio</span>
+                        </h1>
+                        <p className="text-xl text-slate-600">
+                            Agenda tu cita en 3 simples pasos
+                        </p>
                     </div>
-                </div>
 
-                {/* Step 1: Select Service */}
-                {step === 1 && (
-                    <div>
-                        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                            <Calendar className="mr-2" /> Selecciona el Servicio
-                        </h2>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {services.map((service) => (
-                                <button
-                                    key={service.type}
-                                    onClick={() => handleServiceSelect(service)}
-                                    className="bg-slate-800/50 border border-white/10 rounded-xl p-6 hover:border-sky-500/50 hover:bg-slate-800 transition-all text-left group"
-                                >
-                                    <div className="flex items-start justify-between mb-3">
-                                        <h3 className="text-xl font-bold text-white group-hover:text-sky-400 transition-colors">
-                                            {serviceLabels[service.type]}
-                                        </h3>
-                                        <div
-                                            className="w-4 h-4 rounded-full"
-                                            style={{ backgroundColor: service.color }}
-                                        />
+                    {/* Progress Steps */}
+                    <div className="flex justify-center mb-12">
+                        <div className="flex items-center space-x-4">
+                            {[1, 2, 3].map((s) => (
+                                <div key={s} className="flex items-center">
+                                    <div className={`flex items-center justify-center w-12 h-12 rounded-full font-bold text-lg transition-all duration-300 ${step >= s
+                                        ? 'bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-300/50'
+                                        : 'bg-white border-2 border-slate-300 text-slate-400'
+                                        }`}>
+                                        {s}
                                     </div>
-                                    <p className="text-gray-400 text-sm mb-4">
-                                        {serviceDescriptions[service.type]}
-                                    </p>
-                                    <div className="flex items-center text-sky-400 text-sm">
-                                        <Clock className="w-4 h-4 mr-2" />
-                                        {service.duration} minutos
-                                    </div>
-                                </button>
+                                    {s < 3 && (
+                                        <div className={`w-20 h-1 mx-2 rounded-full transition-all duration-300 ${step > s ? 'bg-gradient-to-r from-sky-500 to-blue-600' : 'bg-slate-300'
+                                            }`} />
+                                    )}
+                                </div>
                             ))}
                         </div>
                     </div>
-                )}
 
-                {/* Step 2: Select Date & Time */}
-                {step === 2 && (
-                    <div>
-                        <button
-                            onClick={() => setStep(1)}
-                            className="text-sky-400 hover:text-sky-300 mb-6"
-                        >
-                            ← Cambiar servicio
-                        </button>
-                        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                            <Clock className="mr-2" /> Selecciona Fecha y Hora
-                        </h2>
-
-                        <div className="grid md:grid-cols-2 gap-8">
-                            {/* Date Selection */}
-                            <div className="bg-slate-800/50 border border-white/10 rounded-xl p-6">
-                                <h3 className="text-lg font-bold text-white mb-4">Fecha</h3>
-                                <input
-                                    type="date"
-                                    value={formData.scheduledDate}
-                                    onChange={(e) => setFormData({ ...formData, scheduledDate: e.target.value })}
-                                    min={getMinDate()}
-                                    className="w-full bg-slate-700 border border-white/10 rounded-lg px-4 py-3 text-white"
-                                />
-                            </div>
-
-                            {/* Time Selection */}
-                            <div className="bg-slate-800/50 border border-white/10 rounded-xl p-6">
-                                <h3 className="text-lg font-bold text-white mb-4">Horarios Disponibles</h3>
-                                {!formData.scheduledDate ? (
-                                    <p className="text-gray-400 text-sm">Selecciona una fecha primero</p>
-                                ) : isLoading ? (
-                                    <p className="text-gray-400 text-sm">Cargando horarios...</p>
-                                ) : availableSlots.length === 0 ? (
-                                    <p className="text-gray-400 text-sm">No hay horarios disponibles para esta fecha</p>
-                                ) : (
-                                    <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-                                        {availableSlots.map((slot, index) => (
-                                            <button
-                                                key={index}
-                                                onClick={() => handleSlotSelect(slot)}
-                                                className={`px-4 py-2 rounded-lg font-medium transition-all ${formData.startTime === slot.start
-                                                    ? 'bg-sky-500 text-white'
-                                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                                                    }`}
-                                            >
-                                                {slot.start}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
+                    {/* Step 1: Select Service */}
+                    {step === 1 && (
+                        <div>
+                            <h2 className="text-3xl font-bold text-slate-900 mb-8 flex items-center justify-center gap-3">
+                                <Calendar className="text-sky-600" /> Selecciona el Servicio
+                            </h2>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {services.map((service) => (
+                                    <button
+                                        key={service.type}
+                                        onClick={() => handleServiceSelect(service)}
+                                        className="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-sky-300 hover:shadow-xl hover:shadow-sky-200/40 transition-all duration-300 text-left group"
+                                    >
+                                        <div className="flex items-start justify-between mb-4">
+                                            <h3 className="text-xl font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
+                                                {serviceLabels[service.type]}
+                                            </h3>
+                                            <div
+                                                className="w-4 h-4 rounded-full shadow-lg"
+                                                style={{ backgroundColor: service.color }}
+                                            />
+                                        </div>
+                                        <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+                                            {serviceDescriptions[service.type]}
+                                        </p>
+                                        <div className="flex items-center text-sky-600 text-sm font-medium">
+                                            <Clock className="w-4 h-4 mr-2" />
+                                            {service.duration} minutos
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
                         </div>
+                    )}
 
-                        {formData.startTime && (
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    onClick={() => setStep(3)}
-                                    className="px-8 py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-lg transition-colors"
-                                >
-                                    Continuar →
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
+                    {/* Step 2: Select Date & Time */}
+                    {step === 2 && (
+                        <div>
+                            <button
+                                onClick={() => setStep(1)}
+                                className="text-sky-600 hover:text-sky-700 font-medium mb-6 flex items-center gap-2"
+                            >
+                                ← Cambiar servicio
+                            </button>
+                            <h2 className="text-3xl font-bold text-slate-900 mb-8 flex items-center justify-center gap-3">
+                                <Clock className="text-sky-600" /> Selecciona Fecha y Hora
+                            </h2>
 
-                {/* Step 3: Customer Information */}
-                {step === 3 && (
-                    <div>
-                        <button
-                            onClick={() => setStep(2)}
-                            className="text-sky-400 hover:text-sky-300 mb-6"
-                        >
-                            ← Cambiar fecha/hora
-                        </button>
-                        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                            <User className="mr-2" /> Tus Datos
-                        </h2>
-
-                        <form onSubmit={handleSubmit} className="bg-slate-800/50 border border-white/10 rounded-xl p-6">
-                            <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <label className="block text-white font-medium mb-2">Nombre Completo *</label>
+                            <div className="grid md:grid-cols-2 gap-8">
+                                {/* Date Selection */}
+                                <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-lg">
+                                    <h3 className="text-lg font-bold text-slate-900 mb-4">Fecha</h3>
                                     <input
-                                        type="text"
-                                        value={formData.customer.name}
-                                        onChange={(e) => setFormData({
-                                            ...formData,
-                                            customer: { ...formData.customer, name: e.target.value }
-                                        })}
-                                        className="w-full bg-slate-700 border border-white/10 rounded-lg px-4 py-3 text-white"
-                                        required
+                                        type="date"
+                                        value={formData.scheduledDate}
+                                        onChange={(e) => setFormData({ ...formData, scheduledDate: e.target.value })}
+                                        min={getMinDate()}
+                                        className="w-full bg-white border-2 border-slate-300 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 rounded-xl px-4 py-3 text-slate-900 transition-all"
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-white font-medium mb-2">Teléfono *</label>
-                                    <input
-                                        type="tel"
-                                        value={formData.customer.phone}
-                                        onChange={(e) => setFormData({
-                                            ...formData,
-                                            customer: { ...formData.customer, phone: e.target.value }
-                                        })}
-                                        className="w-full bg-slate-700 border border-white/10 rounded-lg px-4 py-3 text-white"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-white font-medium mb-2">Email *</label>
-                                    <input
-                                        type="email"
-                                        value={formData.customer.email}
-                                        onChange={(e) => setFormData({
-                                            ...formData,
-                                            customer: { ...formData.customer, email: e.target.value }
-                                        })}
-                                        className="w-full bg-slate-700 border border-white/10 rounded-lg px-4 py-3 text-white"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-white font-medium mb-2">Dirección *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.customer.address}
-                                        onChange={(e) => setFormData({
-                                            ...formData,
-                                            customer: { ...formData.customer, address: e.target.value }
-                                        })}
-                                        className="w-full bg-slate-700 border border-white/10 rounded-lg px-4 py-3 text-white"
-                                        required
-                                    />
+                                {/* Time Selection */}
+                                <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-lg">
+                                    <h3 className="text-lg font-bold text-slate-900 mb-4">Horarios Disponibles</h3>
+                                    {!formData.scheduledDate ? (
+                                        <p className="text-slate-500 text-sm">Selecciona una fecha primero</p>
+                                    ) : isLoading ? (
+                                        <p className="text-slate-500 text-sm">Cargando horarios...</p>
+                                    ) : availableSlots.length === 0 ? (
+                                        <p className="text-slate-500 text-sm">No hay horarios disponibles para esta fecha</p>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                                            {availableSlots.map((slot, index) => (
+                                                <button
+                                                    key={index}
+                                                    onClick={() => handleSlotSelect(slot)}
+                                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${formData.startTime === slot.start
+                                                        ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg'
+                                                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                                                        }`}
+                                                >
+                                                    {slot.start}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="mb-6">
-                                <label className="block text-white font-medium mb-2">
-                                    Describe el problema o requerimiento (opcional)
-                                </label>
-                                <textarea
-                                    value={formData.serviceDetails.issue}
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        serviceDetails: { ...formData.serviceDetails, issue: e.target.value }
-                                    })}
-                                    className="w-full bg-slate-700 border border-white/10 rounded-lg px-4 py-3 text-white"
-                                    rows={4}
-                                    placeholder="Ej: El aire acondicionado no enfría correctamente..."
-                                />
-                            </div>
+                            {formData.startTime && (
+                                <div className="mt-8 flex justify-end">
+                                    <button
+                                        onClick={() => setStep(3)}
+                                        className="px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-400/50 hover:scale-105 transition-all duration-300"
+                                    >
+                                        Continuar →
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                            <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 mb-6">
-                                <p className="text-blue-200 text-sm">
-                                    📍 Una vez confirmes tu cita, recibirás un email de confirmación y nuestro equipo se pondrá en contacto contigo.
-                                </p>
-                            </div>
+                    {/* Step 3: Customer Information */}
+                    {step === 3 && (
+                        <div>
+                            <button
+                                onClick={() => setStep(2)}
+                                className="text-sky-600 hover:text-sky-700 font-medium mb-6 flex items-center gap-2"
+                            >
+                                ← Cambiar fecha/hora
+                            </button>
+                            <h2 className="text-3xl font-bold text-slate-900 mb-8 flex items-center justify-center gap-3">
+                                <User className="text-sky-600" /> Tus Datos
+                            </h2>
 
-                            <div className="flex justify-end">
-                                <button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-600 text-white font-bold rounded-lg transition-colors"
-                                >
-                                    {isLoading ? 'Agendando...' : 'Confirmar Cita'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
-            </PageLayout>
+                            <form onSubmit={handleSubmit} className="bg-white border-2 border-slate-200 rounded-2xl p-8 shadow-xl">
+                                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                                    <div>
+                                        <label className="block text-slate-900 font-semibold mb-2">Nombre Completo *</label>
+                                        <input
+                                            type="text"
+                                            value={formData.customer.name}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                customer: { ...formData.customer, name: e.target.value }
+                                            })}
+                                            className="w-full bg-white border-2 border-slate-300 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 rounded-xl px-4 py-3 text-slate-900 transition-all"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-slate-900 font-semibold mb-2">Teléfono *</label>
+                                        <input
+                                            type="tel"
+                                            value={formData.customer.phone}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                customer: { ...formData.customer, phone: e.target.value }
+                                            })}
+                                            className="w-full bg-white border-2 border-slate-300 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 rounded-xl px-4 py-3 text-slate-900 transition-all"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-slate-900 font-semibold mb-2">Email *</label>
+                                        <input
+                                            type="email"
+                                            value={formData.customer.email}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                customer: { ...formData.customer, email: e.target.value }
+                                            })}
+                                            className="w-full bg-white border-2 border-slate-300 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 rounded-xl px-4 py-3 text-slate-900 transition-all"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-slate-900 font-semibold mb-2">Dirección *</label>
+                                        <input
+                                            type="text"
+                                            value={formData.customer.address}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                customer: { ...formData.customer, address: e.target.value }
+                                            })}
+                                            className="w-full bg-white border-2 border-slate-300 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 rounded-xl px-4 py-3 text-slate-900 transition-all"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mb-6">
+                                    <label className="block text-slate-900 font-semibold mb-2">
+                                        Describe el problema o requerimiento (opcional)
+                                    </label>
+                                    <textarea
+                                        value={formData.serviceDetails.issue}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            serviceDetails: { ...formData.serviceDetails, issue: e.target.value }
+                                        })}
+                                        className="w-full bg-white border-2 border-slate-300 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 rounded-xl px-4 py-3 text-slate-900 transition-all"
+                                        rows={4}
+                                        placeholder="Ej: El aire acondicionado no enfría correctamente..."
+                                    />
+                                </div>
+
+                                <div className="bg-gradient-to-r from-blue-50 to-sky-50 border-2 border-blue-200 rounded-xl p-4 mb-6">
+                                    <p className="text-blue-700 text-sm font-medium">
+                                        📍 Una vez confirmes tu cita, recibirás un email de confirmación y nuestro equipo se pondrá en contacto contigo.
+                                    </p>
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-emerald-400/50 hover:scale-105 transition-all duration-300 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                    >
+                                        {isLoading ? 'Agendando...' : 'Confirmar Cita'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+                </PageLayout>
+            </div>
             <Footer showFooter={true} isStatic={true} />
         </>
     );

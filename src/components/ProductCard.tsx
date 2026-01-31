@@ -30,7 +30,7 @@ export default function ProductCard({
   const productLink = slug ? `/tienda/${slug}` : '#';
 
   return (
-    <div className="group relative bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+    <div className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-sky-300 hover:shadow-xl hover:shadow-sky-200/40 transition-all duration-300">
       {/* Badges Top-Left */}
       <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
         {!inStock && (
@@ -47,7 +47,7 @@ export default function ProductCard({
 
       {/* Product Image - Clickable */}
       <Link href={productLink} className="block">
-        <div className="relative h-48 flex items-center justify-center mb-4 overflow-hidden rounded-lg bg-slate-800 cursor-pointer">
+        <div className="relative h-48 flex items-center justify-center mb-4 overflow-hidden rounded-lg bg-slate-50 cursor-pointer">
           <Image
             src={image}
             alt={title}
@@ -62,11 +62,11 @@ export default function ProductCard({
 
       {/* Product Info - Clickable */}
       <Link href={productLink} className="block">
-        <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 hover:text-sky-400 transition-colors cursor-pointer">
+        <h3 className="text-xl font-bold text-slate-900 mb-2 line-clamp-1 hover:text-sky-600 transition-colors cursor-pointer">
           {title}
         </h3>
       </Link>
-      <p className="text-gray-400 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">{description}</p>
+      <p className="text-slate-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">{description}</p>
 
       {/* BTU Badge (if applicable) */}
       {btuCapacity && (
