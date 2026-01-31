@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone', // Required for Docker deployment
   images: {
     // Desactivar optimización en desarrollo para evitar errores 404
     unoptimized: process.env.NODE_ENV === 'development',
