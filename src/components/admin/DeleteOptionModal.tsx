@@ -205,7 +205,7 @@ export default function DeleteOptionModal({
                                 </button>
                                 <button
                                     onClick={confirmDelete}
-                                    disabled={isDeleting || (usageInfo && usageInfo.count > 0)}
+                                    disabled={isDeleting || !!(usageInfo && usageInfo.count > 0)}
                                     className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                     type="button"
                                 >
